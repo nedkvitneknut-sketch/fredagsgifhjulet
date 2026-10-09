@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="nn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="theme-color" content="#f5f0e8">
+<title>Statistikk · Fredagsgif-hjulet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a1a1a; --cream:#f5f0e8; --paper:#fffdf8;
+  --red:#ff3d5a; --yellow:#ffe08a; --purple:#c44dff;
+  --orange:#ff9f1c; --green:#1ab87c; --blue:#4d8fff; --muted:#777;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--cream);font-family:'DM Sans',system-ui,-apple-system,sans-serif;color:var(--ink);min-height:100vh;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body::before{content:'';position:fixed;width:min(110vw,900px);height:min(110vw,900px);border-radius:50%;background:radial-gradient(circle,#ffe08a 0%,#ffb347 40%,#ff6b6b 70%,#c44dff 100%);top:30%;left:70%;transform:translate(-50%,-50%);opacity:.12;pointer-events:none;z-index:0}
+a{color:inherit}
+.wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:1.4rem 1.25rem 3rem}
+@media (max-width:600px){.wrap{padding:1rem .8rem 2.5rem}}
+
+/* HEADER */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1.2rem}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,5vw,3.6rem);letter-spacing:-2px;line-height:.92}
+h1 em{font-style:normal;color:transparent;-webkit-text-stroke:2px var(--ink)}
+.back{display:inline-flex;align-items:center;gap:.4rem;font-weight:700;text-decoration:none;background:var(--red);color:#fff;border:2px solid var(--ink);border-radius:99px;padding:.55rem 1.1rem;box-shadow:3px 3px 0 var(--ink)}
+.back:hover{background:#ff2244}
+
+/* FILTER */
+.filters{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem;background:rgba(245,240,232,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:.7rem 0;margin-bottom:.8rem;border-bottom:2px solid var(--ink)}
+.filters label{font-size:.82rem;color:#555;font-weight:500;display:flex;align-items:center;gap:.4rem}
+select{font:500 15px 'DM Sans',sans-serif;border:2px solid var(--ink);border-radius:10px;padding:.42rem .6rem;background:#fff;color:var(--ink);max-width:100%}
+.btn{font:700 .9rem 'DM Sans',sans-serif;border:2px solid var(--ink);border-radius:99px;background:#fff;padding:.42rem .9rem;cursor:pointer;color:var(--ink)}
+.btn:hover{background:var(--yellow)}
+.status{font-size:.82rem;color:var(--muted);margin-left:auto}
+select:focus-visible,.btn:focus-visible,.back:focus-visible,th button:focus-visible,.nav a:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+.nav{display:flex;flex-wrap:wrap;gap:.4rem;margin:.2rem 0 1.4rem}
+.nav a{font-size:.85rem;font-weight:500;text-decoration:none;border:2px solid var(--ink);border-radius:99px;padding:.25rem .75rem;background:#fff}
+.nav a:hover{background:var(--yellow)}
+
+/* SECTIONS */
+section{margin-top:2.4rem;scroll-margin-top:5rem}
+h2{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-1px;margin-bottom:.25rem}
+.lead{color:#666;font-size:.95rem;margin-bottom:1rem;max-width:70ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:1rem}
+.grid.wide{grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr))}
+.card{background:var(--paper);border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink);padding:1rem 1.1rem 1.1rem;min-width:0}
+.card h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:.15rem}
+.card .sub{font-size:.8rem;color:var(--muted);margin-bottom:.6rem}
+.chart{position:relative;height:290px}
+.chart.tall{height:380px}
+.chart.short{height:220px}
+@media (max-width:600px){.chart{height:250px}.chart.tall{height:340px}}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem}
+.kpi{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:.75rem .9rem}
+.kpi b{display:block;font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.5rem,3.5vw,2.1rem);line-height:1.05;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.kpi span{font-size:.8rem;color:var(--muted)}
+.kpi.hot{background:var(--yellow)}
+.fun{margin-top:.9rem;display:flex;flex-wrap:wrap;gap:.5rem}
+.fun p{background:#fff;border:2px dashed var(--ink);border-radius:12px;padding:.5rem .8rem;font-size:.9rem}
+
+/* AWARDS */
+.awards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.8rem}
+.award{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:.8rem .9rem;display:flex;gap:.7rem;align-items:flex-start}
+.award .ic{font-size:1.8rem;line-height:1}
+.award h4{font-size:.78rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.award .who{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;line-height:1.15;overflow-wrap:anywhere}
+.award .what{font-size:.85rem;color:#444}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:2px solid var(--ink);border-radius:14px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:.9rem;font-variant-numeric:tabular-nums}
+th,td{padding:.5rem .65rem;text-align:left;white-space:nowrap;border-bottom:1px solid #eee}
+th{position:sticky;top:0;background:#faf6ee;font-weight:700;font-size:.8rem;border-bottom:2px solid var(--ink)}
+th button{all:unset;cursor:pointer;display:inline-flex;gap:.25rem;align-items:center}
+th button:hover{text-decoration:underline}
+th .arr{font-size:.7rem;color:var(--red)}
+td.num,th.num{text-align:right}
+th.num button{justify-content:flex-end}
+tbody tr:hover{background:#fff8e6}
+tbody tr:last-child td{border-bottom:none}
+.tdot{display:inline-block;width:.65rem;height:.65rem;border-radius:50%;margin-right:.4rem;border:1.5px solid var(--ink);vertical-align:-.05rem}
+.pos{color:var(--green);font-weight:700}.neg{color:var(--red);font-weight:700}
+.rank1{font-weight:800}
+.medal{margin-right:.2rem}
+
+/* PROFILE */
+.prof-head{display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center;margin-bottom:1rem}
+.mini-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin-bottom:1rem}
+.mini-kpis .kpi b{font-size:1.45rem}
+.recent{list-style:none;display:flex;flex-direction:column;gap:.3rem;max-height:300px;overflow:auto}
+.recent li{display:flex;justify-content:space-between;gap:.6rem;padding:.4rem .6rem;border-radius:8px;background:#faf6ee;font-size:.88rem;font-variant-numeric:tabular-nums}
+.recent li.pb{background:var(--yellow);font-weight:700}
+
+.heat{display:grid;gap:3px;font-size:.7rem;overflow-x:auto}
+.heat div{border-radius:4px;min-height:22px;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.heat .lbl{background:none;color:#666;justify-content:start}
+
+.empty{padding:2rem;text-align:center;color:#777}
+.loading{padding:4rem 1rem;text-align:center;font-family:'Syne',sans-serif;font-weight:700;font-size:1.3rem}
+.err{background:#fff0f2;border:2px solid var(--red);border-radius:14px;padding:1rem;margin:1rem 0}
+footer{margin-top:3rem;font-size:.8rem;color:#888;text-align:center}
+.update-toast{position:fixed;left:50%;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:400;background:var(--ink);color:#fff;border-radius:99px;padding:.6rem 1.2rem;font-weight:500;box-shadow:3px 3px 0 var(--red)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>Fredagsgif<br><em>statistikk</em></h1>
+    <a class="back" href="./">🎰 Til hjulet</a>
+  </div>
+
+  <div class="filters" id="filters">
+    <label>Periode
+      <select id="fPeriod">
+        <option value="all">Heile tida</option>
+        <option value="today">I dag</option>
+        <option value="30">Siste 30 dagar</option>
+        <option value="90">Siste 90 dagar</option>
+        <option value="year">I år</option>
+      </select>
+    </label>
+    <label>Team
+      <select id="fTeam"><option value="all">Alle team</option></select>
+    </label>
+    <button class="btn" id="refresh" type="button">↻ Oppdater</button>
+    <span class="status" id="status">Hentar data …</span>
+  </div>
+
+  <nav class="nav" aria-label="Snarvegar">
+    <a href="#oversikt">Oversikt</a><a href="#kaaringar">Kåringar</a><a href="#team">Team</a><a href="#spelarar">Spelarar</a>
+    <a href="#tid">Over tid</a><a href="#fordeling">Fordeling</a><a href="#dagar">Dagsvinnarar</a>
+    <a href="#profil">Spelarprofil</a><a href="#teamprofil">Teamprofil</a>
+  </nav>
+
+  <div id="content"><div class="loading">Hentar alle resultat …</div></div>
+  <footer>Tala blir henta direkte frå Supabase kvar gong sida opnar, og kvart minutt medan ho er open.</footer>
+</div>
+
+<template id="tpl">
+  <section id="oversikt">
+    <h2>Oversikt</h2>
+    <p class="lead" id="ovLead"></p>
+    <div class="kpis" id="kpis"></div>
+    <div class="fun" id="fun"></div>
+  </section>
+
+  <section id="kaaringar">
+    <h2>Kåringar</h2>
+    <p class="lead">Nokre utmerkingar krev eit minimum av spel, så ein enkelt heldig runde ikkje avgjer alt.</p>
+    <div class="awards" id="awards"></div>
+  </section>
+
+  <section id="team">
+    <h2>Team</h2>
+    <p class="lead"><b>Lagscore</b> er snittet av beste resultat til kvart medlem. Då tel alle på laget like mykje, uansett kor mykje dei spelar.</p>
+    <div class="tbl-wrap" style="margin-bottom:1rem"><table id="teamTable"></table></div>
+    <div class="grid wide">
+      <div class="card"><h3>Lagscore, snitt og beste</h3><p class="sub">Omdreiingar per team</p><div class="chart"><canvas id="cTeamScore"></canvas></div></div>
+      <div class="card"><h3>Teamprofil</h3><p class="sub">Kvar akse er skalert mot det beste teamet (100)</p><div class="chart"><canvas id="cTeamRadar"></canvas></div></div>
+      <div class="card"><h3>Del av alle spel</h3><p class="sub">Kor aktive er teama?</p><div class="chart"><canvas id="cTeamShare"></canvas></div></div>
+      <div class="card"><h3>Teamsnitt per dag</h3><p class="sub">Gjennomsnittleg resultat dei dagane teamet spelte</p><div class="chart"><canvas id="cTeamTime"></canvas></div></div>
+      <div class="card"><h3>Dagsigrar per team</h3><p class="sub">Kor mange dagar teamet hadde dagens beste</p><div class="chart short"><canvas id="cTeamWins"></canvas></div></div>
+      <div class="card"><h3>Spreiing i teama</h3><p class="sub">Lågaste, snitt og høgaste resultat</p><div class="chart short"><canvas id="cTeamRange"></canvas></div></div>
+    </div>
+  </section>
+
+  <section id="spelarar">
+    <h2>Spelarar</h2>
+    <p class="lead">Trykk på ei kolonne for å sortere. <b>Framgang</b> samanliknar snittet av dei siste og dei første rundane (minst 4 spel).</p>
+    <div class="tbl-wrap" style="margin-bottom:1rem"><table id="personTable"></table></div>
+    <div class="grid wide">
+      <div class="card"><h3>Beste og snitt per spelar</h3><p class="sub">Topp 15 etter beste resultat</p><div class="chart tall"><canvas id="cPersonBest"></canvas></div></div>
+      <div class="card"><h3>Trykk mot omdreiingar</h3><p class="sub">Kvart punkt er eitt spel. Fargen viser team.</p><div class="chart tall"><canvas id="cScatter"></canvas></div></div>
+      <div class="card"><h3>Flest spel</h3><p class="sub">Topp 15</p><div class="chart"><canvas id="cPersonGames"></canvas></div></div>
+      <div class="card"><h3>Totalt snurra</h3><p class="sub">Summen av alle omdreiingar, topp 15</p><div class="chart"><canvas id="cPersonTotal"></canvas></div></div>
+    </div>
+  </section>
+
+  <section id="tid">
+    <h2>Over tid</h2>
+    <div class="grid wide">
+      <div class="card"><h3>Spel per dag</h3><p class="sub">Fordelt på team</p><div class="chart"><canvas id="cDaily"></canvas></div></div>
+      <div class="card"><h3>Dagens beste, snitt og median</h3><p class="sub">Omdreiingar per dag</p><div class="chart"><canvas id="cDailyBest"></canvas></div></div>
+      <div class="card"><h3>Rekordutvikling</h3><p class="sub">Kvar gong rekorden blei slått</p><div class="chart"><canvas id="cRecord"></canvas></div></div>
+      <div class="card"><h3>Aktive spelarar per dag</h3><p class="sub">Unike spelarar og nye spelarar</p><div class="chart"><canvas id="cActive"></canvas></div></div>
+    </div>
+  </section>
+
+  <section id="fordeling">
+    <h2>Fordeling</h2>
+    <div class="grid wide">
+      <div class="card"><h3>Resultatfordeling</h3><p class="sub">Kor mange spel endar på kvart nivå</p><div class="chart"><canvas id="cHist"></canvas></div></div>
+      <div class="card"><h3>Trykkfart</h3><p class="sub">Trykk per sekund i spela</p><div class="chart"><canvas id="cTapHist"></canvas></div></div>
+      <div class="card"><h3>Når blir det spelt?</h3><p class="sub">Spel per klokkeslett</p><div class="chart"><canvas id="cHour"></canvas></div></div>
+      <div class="card"><h3>Snittresultat per klokkeslett</h3><p class="sub">Er folk betre før eller etter lunsj?</p><div class="chart"><canvas id="cHourAvg"></canvas></div></div>
+      <div class="card"><h3>Varmekart</h3><p class="sub">Spel per vekedag og time</p><div id="heat" class="heat"></div></div>
+      <div class="card"><h3>Spel nummer kor mange?</h3><p class="sub">Snittresultat for 1., 2., 3. … spel per spelar. Blir ein betre med trening?</p><div class="chart"><canvas id="cLearning"></canvas></div></div>
+    </div>
+  </section>
+
+  <section id="dagar">
+    <h2>Dagsvinnarar</h2>
+    <div class="grid wide">
+      <div class="card"><h3>Flest dagsigrar</h3><p class="sub">Spelarar</p><div class="chart"><canvas id="cDayWins"></canvas></div></div>
+      <div class="card" style="padding:0;overflow:hidden"><div class="tbl-wrap" style="border:none;border-radius:0;max-height:370px"><table id="dayTable"></table></div></div>
+    </div>
+  </section>
+
+  <section id="profil">
+    <h2>Spelarprofil</h2>
+    <div class="prof-head">
+      <label>Spelar <select id="pSel"></select></label>
+      <label>Samanlikn med <select id="pCmp"><option value="">Ingen</option></select></label>
+    </div>
+    <div class="mini-kpis" id="pKpis"></div>
+    <div class="grid wide">
+      <div class="card"><h3>Alle spel</h3><p class="sub">Gul ring = ny personleg rekord. Stipla linje = snittet for alle.</p><div class="chart"><canvas id="cPLine"></canvas></div></div>
+      <div class="card"><h3>Fordeling</h3><p class="sub">Spelaren mot alle andre</p><div class="chart"><canvas id="cPHist"></canvas></div></div>
+      <div class="card"><h3>Siste spel</h3><p class="sub">Nyaste øvst</p><ul class="recent" id="pRecent"></ul></div>
+      <div class="card"><h3>Samanlikna med teamet og alle</h3><p class="sub">Snitt, beste og trykkfart</p><div class="chart"><canvas id="cPCompare"></canvas></div></div>
+    </div>
+  </section>
+
+  <section id="teamprofil">
+    <h2>Teamprofil</h2>
+    <div class="prof-head"><label>Team <select id="tSel"></select></label></div>
+    <div class="mini-kpis" id="tKpis"></div>
+    <div class="grid wide">
+      <div class="card"><h3>Medlemmane</h3><p class="sub">Beste og snitt per medlem</p><div class="chart"><canvas id="cTMembers"></canvas></div></div>
+      <div class="card"><h3>Kven bidreg mest?</h3><p class="sub">Del av teamet sine spel</p><div class="chart"><canvas id="cTContrib"></canvas></div></div>
+      <div class="card"><h3>Teamet over tid</h3><p class="sub">Beste og snitt per dag</p><div class="chart"><canvas id="cTLine"></canvas></div></div>
+      <div class="card"><h3>Internt</h3><p class="sub">Toppliste innad i teamet</p><div class="tbl-wrap"><table id="tTable"></table></div></div>
+    </div>
+  </section>
+</template>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+/* ================= Oppsett ================= */
+const STATS_VERSION='2026-10-09.1';
+const SUPABASE_URL='https://mqecnqmcobyybcxgdixd.supabase.co';
+const SUPABASE_KEY='sb_publishable_p1pgM4gcDoN25cxEoSDoPA_NkdSJd_q';
+const GAME_TIME=10;
+const PAL=['#ff3d5a','#4d8fff','#1ab87c','#ff9f1c','#c44dff','#ff6b9d','#00b3c7','#8a6d3b','#6b4dff','#9acd32'];
+const NO_TEAM='Utan team';
+
+const $=id=>document.getElementById(id);
+const nf1=new Intl.NumberFormat('nb-NO',{minimumFractionDigits:1,maximumFractionDigits:1});
+const nf0=new Intl.NumberFormat('nb-NO',{maximumFractionDigits:0});
+const f1=n=>n==null||isNaN(n)?'–':nf1.format(n);
+const f0=n=>n==null||isNaN(n)?'–':nf0.format(n);
+const sum=a=>a.reduce((s,x)=>s+x,0);
+const mean=a=>a.length?sum(a)/a.length:NaN;
+const median=a=>{if(!a.length)return NaN;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2};
+const stdev=a=>{if(a.length<2)return NaN;const m=mean(a);return Math.sqrt(sum(a.map(x=>(x-m)**2))/(a.length-1))};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dayKey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const dayLabel=k=>{const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('nb-NO',{day:'numeric',month:'short'})};
+const dateTime=d=>d.toLocaleDateString('nb-NO',{day:'numeric',month:'short'})+' kl. '+d.toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'});
+const WD=['Mån','Tys','Ons','Tor','Fre','Lau','Sun'];
+
+/* ================= Henting ================= */
+function sbHeaders(){const h={'apikey':SUPABASE_KEY};if(SUPABASE_KEY.startsWith('eyJ'))h.Authorization='Bearer '+SUPABASE_KEY;return h}
+async function fetchAll(){
+  const out=[];const page=1000;
+  for(let off=0;off<100000;off+=page){
+    const url=SUPABASE_URL+'/rest/v1/scores?select=*&order=created_at.asc&limit='+page+'&offset='+off;
+    const r=await fetch(url,{headers:sbHeaders(),cache:'no-store'});
+    if(!r.ok)throw new Error('Supabase svarte '+r.status+': '+(await r.text()).slice(0,200));
+    const rows=await r.json();out.push(...rows);
+    if(rows.length<page)break;
+  }
+  return out;
+}
+
+/* ================= Data ================= */
+let ALL=[], TEAMCOL={}, charts={};
+function prep(raw){
+  const rows=raw.map(r=>({id:r.id,name:String(r.name||'Anonym').trim(),team:String(r.team||'').trim(),rounds:+r.rounds,taps:+r.taps||0,d:new Date(r.created_at)}))
+    .filter(r=>!isNaN(r.rounds)&&!isNaN(r.d));
+  // slå saman namn med ulik store/små bokstav
+  const nameSpell=new Map();
+  rows.forEach(r=>{const k=r.name.toLowerCase();if(!nameSpell.has(k))nameSpell.set(k,new Map());const m=nameSpell.get(k);m.set(r.name,(m.get(r.name)||0)+1)});
+  const teamSpell=new Map();
+  rows.forEach(r=>{if(!r.team)return;const k=r.team.toLowerCase();if(!teamSpell.has(k))teamSpell.set(k,new Map());const m=teamSpell.get(k);m.set(r.team,(m.get(r.team)||0)+1)});
+  const best=m=>[...m.entries()].sort((a,b)=>b[1]-a[1])[0][0];
+  // siste team per person, brukt for spel utan team
+  const lastTeam=new Map();
+  rows.forEach(r=>{if(r.team)lastTeam.set(r.name.toLowerCase(),r.team.toLowerCase())});
+  rows.forEach(r=>{
+    r.pkey=r.name.toLowerCase();r.pname=best(nameSpell.get(r.pkey));
+    const tk=r.team?r.team.toLowerCase():lastTeam.get(r.pkey);
+    r.tname=tk?best(teamSpell.get(tk)):NO_TEAM;
+    r.tps=r.taps/GAME_TIME;r.day=dayKey(r.d);
+  });
+  rows.sort((a,b)=>a.d-b.d);
+  return rows;
+}
+function teamColor(t){return TEAMCOL[t]||'#999'}
+function assignColors(rows){
+  const teams=[...new Set(rows.map(r=>r.tname))].filter(t=>t!==NO_TEAM).sort((a,b)=>a.localeCompare(b,'nb'));
+  TEAMCOL={};teams.forEach((t,i)=>TEAMCOL[t]=PAL[i%PAL.length]);TEAMCOL[NO_TEAM]='#b5b5b5';
+}
+function filtered(){
+  const p=$('fPeriod').value,t=$('fTeam').value;
+  const now=new Date();let from=null;
+  if(p==='today'){from=new Date(now);from.setHours(0,0,0,0)}
+  else if(p==='30'||p==='90'){from=new Date(now-p*86400000)}
+  else if(p==='year'){from=new Date(now.getFullYear(),0,1)}
+  return ALL.filter(r=>(!from||r.d>=from)&&(t==='all'||r.tname===t));
+}
+
+function personStats(rows){
+  const map=new Map();
+  rows.forEach(r=>{if(!map.has(r.pkey))map.set(r.pkey,{key:r.pkey,name:r.pname,games:[]});map.get(r.pkey).games.push(r)});
+  const dayBest=dayWinners(rows);
+  const wins=new Map();dayBest.forEach(w=>wins.set(w.r.pkey,(wins.get(w.r.pkey)||0)+1));
+  return [...map.values()].map(p=>{
+    const g=p.games,sc=g.map(x=>x.rounds),n=g.length;
+    const tCount=new Map();g.forEach(x=>tCount.set(x.tname,(tCount.get(x.tname)||0)+1));
+    const team=g[g.length-1].tname;
+    const k=Math.min(5,Math.floor(n/2));
+    const prog=n>=4?mean(sc.slice(-k))-mean(sc.slice(0,k)):NaN;
+    const bestG=g.reduce((a,b)=>b.rounds>a.rounds?b:a);
+    return {key:p.key,name:p.name,team,games:g,n,best:bestG.rounds,bestGame:bestG,avg:mean(sc),med:median(sc),sd:stdev(sc),
+      worst:Math.min(...sc),total:sum(sc),taps:sum(g.map(x=>x.taps)),maxTps:Math.max(...g.map(x=>x.tps)),avgTps:mean(g.map(x=>x.tps)),
+      prog,first:g[0].d,last:g[n-1].d,days:new Set(g.map(x=>x.day)).size,wins:wins.get(p.key)||0};
+  });
+}
+function teamStats(rows,persons){
+  const map=new Map();
+  rows.forEach(r=>{if(!map.has(r.tname))map.set(r.tname,{name:r.tname,games:[]});map.get(r.tname).games.push(r)});
+  const dw=dayWinners(rows);
+  return [...map.values()].map(t=>{
+    const sc=t.games.map(x=>x.rounds);
+    const members=persons.filter(p=>p.games.some(g=>g.tname===t.name));
+    const memberBest=members.map(p=>Math.max(...p.games.filter(g=>g.tname===t.name).map(g=>g.rounds)));
+    const bestG=t.games.reduce((a,b)=>b.rounds>a.rounds?b:a);
+    return {name:t.name,games:t.games,n:t.games.length,members,nm:members.length,best:bestG.rounds,bestGame:bestG,avg:mean(sc),med:median(sc),sd:stdev(sc),worst:Math.min(...sc),
+      total:sum(sc),score:mean(memberBest),avgTps:mean(t.games.map(x=>x.tps)),perMember:t.games.length/members.length,
+      wins:dw.filter(w=>w.r.tname===t.name).length,days:new Set(t.games.map(x=>x.day)).size};
+  }).sort((a,b)=>b.score-a.score);
+}
+function dayWinners(rows){
+  const m=new Map();
+  rows.forEach(r=>{if(!m.has(r.day))m.set(r.day,[]);m.get(r.day).push(r)});
+  return [...m.entries()].map(([day,g])=>({day,games:g,r:g.reduce((a,b)=>b.rounds>a.rounds?b:a),avg:mean(g.map(x=>x.rounds)),players:new Set(g.map(x=>x.pkey)).size}))
+    .sort((a,b)=>a.day<b.day?-1:1);
+}
+
+/* ================= Chart.js ================= */
+function setupChartDefaults(){
+  if(!window.Chart)return;
+  Chart.defaults.font.family="'DM Sans', system-ui, sans-serif";
+  Chart.defaults.font.size=12;
+  Chart.defaults.color='#333';
+  Chart.defaults.borderColor='rgba(0,0,0,.08)';
+  Chart.defaults.maintainAspectRatio=false;
+  Chart.defaults.plugins.legend.labels.boxWidth=12;
+  Chart.defaults.plugins.legend.labels.usePointStyle=true;
+  Chart.defaults.plugins.tooltip.backgroundColor='#1a1a1a';
+  Chart.defaults.plugins.tooltip.padding=10;
+  Chart.defaults.plugins.tooltip.cornerRadius=10;
+  Chart.defaults.plugins.tooltip.titleFont={weight:'700'};
+  Chart.defaults.elements.bar.borderRadius=6;
+  Chart.defaults.elements.bar.borderSkipped=false;
+}
+function mk(id,cfg){
+  const el=$(id);if(!el||!window.Chart)return null;
+  if(charts[id])charts[id].destroy();
+  charts[id]=new Chart(el,cfg);return charts[id];
+}
+const alpha=(hex,a)=>{const n=parseInt(hex.slice(1),16);return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')'};
+const roundsAxis={beginAtZero:true,title:{display:true,text:'omdreiingar'}};
+
+/* ================= Tabellar ================= */
+function sortableTable(el,cols,data,state){
+  const draw=()=>{
+    const c=cols.find(c=>c.key===state.key);
+    const v=r=>c.val?c.val(r):r[c.key];
+    const rows=[...data].sort((a,b)=>{
+      let x=v(a),y=v(b);
+      const xn=x==null||(typeof x==='number'&&isNaN(x)),yn=y==null||(typeof y==='number'&&isNaN(y));
+      if(xn&&yn)return 0;if(xn)return 1;if(yn)return -1;
+      if(typeof x==='string')return state.dir*x.localeCompare(y,'nb');
+      return state.dir*(x-y);
+    });
+    el.innerHTML='<thead><tr>'+cols.map(c=>'<th class="'+(c.num?'num':'')+'" aria-sort="'+(c.key===state.key?(state.dir>0?'ascending':'descending'):'none')+'"><button type="button" data-k="'+c.key+'">'+c.label+(c.key===state.key?'<span class="arr">'+(state.dir>0?'▲':'▼')+'</span>':'')+'</button></th>').join('')+'</tr></thead>'+
+      '<tbody>'+rows.map((r,i)=>'<tr>'+cols.map(c=>'<td class="'+(c.num?'num':'')+'">'+c.fmt(r,i)+'</td>').join('')+'</tr>').join('')+'</tbody>';
+    el.querySelectorAll('th button').forEach(b=>b.addEventListener('click',()=>{
+      const k=b.dataset.k;if(state.key===k)state.dir*=-1;else{state.key=k;const cc=cols.find(c=>c.key===k);state.dir=cc.num?-1:1}draw();
+    }));
+  };
+  draw();
+}
+const teamCell=t=>'<span class="tdot" style="background:'+teamColor(t)+'"></span>'+esc(t);
+const progCell=v=>isNaN(v)?'–':'<span class="'+(v>=0?'pos':'neg')+'">'+(v>=0?'+':'')+f1(v)+'</span>';
+let personSort={key:'best',dir:-1}, teamSort={key:'score',dir:-1};
+
+/* ================= Rendering ================= */
+function render(){
+  const rows=filtered();
+  const content=$('content');
+  if(!$('oversikt')){content.innerHTML='';content.appendChild($('tpl').content.cloneNode(true));bindProfileSelects()}
+  if(!rows.length){
+    $('kpis').innerHTML='';$('fun').innerHTML='';$('awards').innerHTML='';
+    $('ovLead').textContent='Ingen spel i denne perioden. Prøv ein annan periode eller eit anna team.';
+    Object.values(charts).forEach(c=>c.destroy());charts={};
+    ['teamTable','personTable','dayTable','tTable'].forEach(id=>$(id).innerHTML='');
+    $('pKpis').innerHTML='';$('tKpis').innerHTML='';$('pRecent').innerHTML='';$('heat').innerHTML='';
+    return;
+  }
+  const persons=personStats(rows);
+  const teams=teamStats(rows,persons);
+  const days=dayWinners(rows);
+  renderOverview(rows,persons,teams,days);
+  renderAwards(rows,persons,teams,days);
+  renderTeams(rows,persons,teams,days);
+  renderPersons(rows,persons);
+  renderTime(rows,persons,teams,days);
+  renderDist(rows,persons);
+  renderDays(rows,persons,days);
+  fillProfileSelects(persons,teams);
+  renderPlayer(rows,persons,teams);
+  renderTeamProfile(rows,persons,teams);
+}
+
+function renderOverview(rows,persons,teams,days){
+  const sc=rows.map(r=>r.rounds);
+  const rec=rows.reduce((a,b)=>b.rounds>a.rounds?b:a);
+  const today=dayKey(new Date());
+  const tRows=rows.filter(r=>r.day===today);
+  const totalRounds=sum(sc), totalTaps=sum(rows.map(r=>r.taps));
+  const span=days.length>1?'frå '+dayLabel(days[0].day)+' til '+dayLabel(days[days.length-1].day):'på '+dayLabel(days[0].day);
+  $('ovLead').textContent=(f0(rows.length)+' spel fordelt på '+days.length+(days.length===1?' dag':' dagar')+', '+span+'.').replace(/\.\.$/,'.');
+  const K=[
+    ['Spel totalt',f0(rows.length)],['Spelarar',f0(persons.length)],['Team',f0(teams.filter(t=>t.name!==NO_TEAM).length)],
+    ['Rekord',f1(rec.rounds),'hot',rec.pname],['Snitt per spel',f1(mean(sc))],['Median',f1(median(sc))],
+    ['Omdreiingar totalt',f0(totalRounds)],['Trykk totalt',f0(totalTaps)],['Spel i dag',f0(tRows.length)],
+    ['Snitt trykk per sekund',f1(mean(rows.map(r=>r.tps)))]
+  ];
+  $('kpis').innerHTML=K.map(k=>'<div class="kpi '+(k[2]||'')+'"><b>'+k[1]+'</b><span>'+esc(k[0])+(k[3]?' · '+esc(k[3]):'')+'</span></div>').join('');
+  const km=totalRounds*Math.PI*1/1000;
+  const avgDay=mean(days.map(d=>d.games.length));
+  const most=persons.reduce((a,b)=>b.n>a.n?b:a);
+  const fun=[
+    '🛞 Var hjulet 1 meter i diameter, har kanten rulla '+(km>=1?f1(km)+' km':f0(km*1000)+' meter')+'.',
+    '👆 Fingrane har trykt '+f0(totalTaps)+' gonger, eller '+f1(totalTaps/Math.max(1,persons.length))+' per spelar.',
+    '📅 I snitt '+f1(avgDay)+' spel per speledag.',
+    '🔁 '+esc(most.name)+' har spelt '+most.n+' gonger, '+f0(100*most.n/rows.length)+' % av alle spel.'
+  ];
+  if(tRows.length){const tb=tRows.reduce((a,b)=>b.rounds>a.rounds?b:a);fun.unshift('🎉 Dagens leiar: '+esc(tb.pname)+' ('+esc(tb.tname)+') med '+f1(tb.rounds)+' omdreiingar.')}
+  $('fun').innerHTML=fun.map(s=>'<p>'+s+'</p>').join('');
+}
+
+function renderAwards(rows,persons,teams,days){
+  const A=[];
+  const by=(arr,f,dir=-1)=>arr.filter(x=>!isNaN(f(x))).sort((a,b)=>dir*(f(a)-f(b)))[0];
+  const rec=by(persons,p=>p.best);
+  A.push(['🏆','Rekordhaldar',rec.name,f1(rec.best)+' omdreiingar, '+dateTime(rec.bestGame.d)]);
+  const act=by(persons,p=>p.n);A.push(['🔥','Flest spel',act.name,act.n+' spel på '+act.days+(act.days===1?' dag':' dagar')]);
+  const w=by(persons,p=>p.wins);if(w&&w.wins)A.push(['👑','Flest dagsigrar',w.name,w.wins+(w.wins===1?' dag':' dagar')+' som dagens beste']);
+  const fast=by(persons,p=>p.maxTps);A.push(['⚡','Raskaste fingrar',fast.name,f1(fast.maxTps)+' trykk i sekundet']);
+  const avgB=by(persons.filter(p=>p.n>=3),p=>p.avg);if(avgB)A.push(['🧱','Beste snitt',avgB.name,f1(avgB.avg)+' i snitt over '+avgB.n+' spel']);
+  const stab=by(persons.filter(p=>p.n>=5),p=>p.sd,1);if(stab)A.push(['🎯','Mest stabil',stab.name,'Standardavvik '+f1(stab.sd)+' over '+stab.n+' spel']);
+  const prog=by(persons.filter(p=>p.n>=4),p=>p.prog);if(prog&&prog.prog>0)A.push(['📈','Størst framgang',prog.name,'+'+f1(prog.prog)+' omdreiingar frå dei første til dei siste rundane']);
+  const tot=by(persons,p=>p.total);A.push(['🌀','Mest snurra totalt',tot.name,f0(tot.total)+' omdreiingar til saman']);
+  const realTeams=teams.filter(t=>t.name!==NO_TEAM);
+  const bt=by(realTeams,t=>t.score);if(bt)A.push(['🤝','Sterkaste team',bt.name,'Lagscore '+f1(bt.score)+' med '+bt.nm+(bt.nm===1?' medlem':' medlemmar')]);
+  const at=by(realTeams,t=>t.perMember);if(at&&realTeams.length>1)A.push(['🏃','Mest aktive team',at.name,f1(at.perMember)+' spel per medlem']);
+  const minutes=r=>r.d.getHours()*60+r.d.getMinutes();
+  const early=rows.reduce((a,b)=>minutes(b)<minutes(a)?b:a), late=rows.reduce((a,b)=>minutes(b)>minutes(a)?b:a);
+  A.push(['🐓','Tidlegaste spel',early.pname,'Kl. '+early.d.toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'})+', '+f1(early.rounds)+' omdr.']);
+  A.push(['🦉','Seinaste spel',late.pname,'Kl. '+late.d.toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'})+', '+f1(late.rounds)+' omdr.']);
+  const bigDay=days.reduce((a,b)=>b.games.length>a.games.length?b:a);
+  A.push(['📆','Travlaste dag',dayLabel(bigDay.day),bigDay.games.length+' spel av '+bigDay.players+' spelarar']);
+  $('awards').innerHTML=A.map(a=>'<div class="award"><div class="ic">'+a[0]+'</div><div><h4>'+esc(a[1])+'</h4><div class="who">'+esc(a[2])+'</div><div class="what">'+esc(a[3])+'</div></div></div>').join('');
+}
+
+function renderTeams(rows,persons,teams,days){
+  const cols=[
+    {key:'rank',label:'#',num:true,val:r=>teams.indexOf(r),fmt:(r)=>teams.indexOf(r)+1},
+    {key:'name',label:'Team',fmt:r=>teamCell(r.name)},
+    {key:'score',label:'Lagscore',num:true,fmt:r=>'<b>'+f1(r.score)+'</b>'},
+    {key:'best',label:'Beste',num:true,fmt:r=>f1(r.best)},
+    {key:'avg',label:'Snitt',num:true,fmt:r=>f1(r.avg)},
+    {key:'med',label:'Median',num:true,fmt:r=>f1(r.med)},
+    {key:'nm',label:'Medlemmar',num:true,fmt:r=>r.nm},
+    {key:'n',label:'Spel',num:true,fmt:r=>r.n},
+    {key:'perMember',label:'Spel/medlem',num:true,fmt:r=>f1(r.perMember)},
+    {key:'total',label:'Totalt omdr.',num:true,fmt:r=>f0(r.total)},
+    {key:'avgTps',label:'Trykk/s',num:true,fmt:r=>f1(r.avgTps)},
+    {key:'wins',label:'Dagsigrar',num:true,fmt:r=>r.wins},
+    {key:'bestBy',label:'Beste spelar',val:r=>r.bestGame.pname,fmt:r=>esc(r.bestGame.pname)}
+  ];
+  sortableTable($('teamTable'),cols,teams,teamSort);
+  const labels=teams.map(t=>t.name);
+  mk('cTeamScore',{type:'bar',data:{labels,datasets:[
+    {label:'Lagscore',data:teams.map(t=>t.score),backgroundColor:teams.map(t=>teamColor(t.name)),borderColor:'#1a1a1a',borderWidth:2},
+    {label:'Snitt',data:teams.map(t=>t.avg),backgroundColor:teams.map(t=>alpha(teamColor(t.name),.4)),borderColor:'#1a1a1a',borderWidth:1},
+    {label:'Beste',data:teams.map(t=>t.best),backgroundColor:'#ffe08a',borderColor:'#1a1a1a',borderWidth:1}
+  ]},options:{scales:{y:roundsAxis}}});
+  const metric=[['Lagscore',t=>t.score],['Snitt',t=>t.avg],['Beste',t=>t.best],['Aktivitet',t=>t.perMember],['Trykkfart',t=>t.avgTps],['Stabilitet',t=>isNaN(t.sd)?NaN:1/(1+t.sd)]];
+  const maxes=metric.map(m=>Math.max(...teams.map(m[1]).filter(x=>!isNaN(x)),1e-9));
+  mk('cTeamRadar',{type:'radar',data:{labels:metric.map(m=>m[0]),datasets:teams.slice(0,8).map(t=>({label:t.name,data:metric.map((m,i)=>{const v=m[1](t);return isNaN(v)?0:Math.round(100*v/maxes[i])}),borderColor:teamColor(t.name),backgroundColor:alpha(teamColor(t.name),.15),pointBackgroundColor:teamColor(t.name),borderWidth:2}))},
+    options:{scales:{r:{min:0,max:100,ticks:{display:false,stepSize:25},pointLabels:{font:{size:12,weight:'600'}}}}}});
+  mk('cTeamShare',{type:'doughnut',data:{labels,datasets:[{data:teams.map(t=>t.n),backgroundColor:teams.map(t=>teamColor(t.name)),borderColor:'#1a1a1a',borderWidth:2}]},
+    options:{cutout:'55%',plugins:{legend:{position:'right'},tooltip:{callbacks:{label:c=>c.label+': '+c.raw+' spel ('+f0(100*c.raw/rows.length)+' %)'}}}}});
+  const dk=days.map(d=>d.day);
+  mk('cTeamTime',{type:'line',data:{labels:dk.map(dayLabel),datasets:teams.map(t=>({label:t.name,spanGaps:true,tension:.3,borderColor:teamColor(t.name),backgroundColor:teamColor(t.name),borderWidth:2.5,pointRadius:3,
+    data:dk.map(k=>{const g=t.games.filter(x=>x.day===k);return g.length?+mean(g.map(x=>x.rounds)).toFixed(1):null})}))},options:{scales:{y:roundsAxis}}});
+  mk('cTeamWins',{type:'bar',data:{labels,datasets:[{label:'Dagsigrar',data:teams.map(t=>t.wins),backgroundColor:teams.map(t=>teamColor(t.name)),borderColor:'#1a1a1a',borderWidth:2}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0}}}}});
+  mk('cTeamRange',{type:'bar',data:{labels,datasets:[
+    {label:'Frå lågaste til høgaste',data:teams.map(t=>[t.worst,t.best]),backgroundColor:teams.map(t=>alpha(teamColor(t.name),.35)),borderColor:teams.map(t=>teamColor(t.name)),borderWidth:2,borderRadius:20},
+    {type:'scatter',label:'Snitt',data:teams.map((t,i)=>({x:t.name,y:t.avg})),backgroundColor:'#1a1a1a',pointRadius:6,pointStyle:'rectRot'}
+  ]},options:{indexAxis:'x',scales:{y:roundsAxis},plugins:{tooltip:{callbacks:{label:c=>Array.isArray(c.raw)?'Lågaste '+f1(c.raw[0])+', høgaste '+f1(c.raw[1]):'Snitt '+f1(c.raw.y)}}}}});
+}
+
+function renderPersons(rows,persons){
+  const ranked=[...persons].sort((a,b)=>b.best-a.best);
+  const medals=['🥇','🥈','🥉'];
+  const cols=[
+    {key:'rank',label:'#',num:true,val:r=>ranked.indexOf(r),fmt:r=>{const i=ranked.indexOf(r);return (i<3?'<span class="medal">'+medals[i]+'</span>':'')+(i+1)}},
+    {key:'name',label:'Spelar',fmt:r=>'<b>'+esc(r.name)+'</b>'},
+    {key:'team',label:'Team',fmt:r=>teamCell(r.team)},
+    {key:'best',label:'Beste',num:true,fmt:r=>'<b>'+f1(r.best)+'</b>'},
+    {key:'avg',label:'Snitt',num:true,fmt:r=>f1(r.avg)},
+    {key:'med',label:'Median',num:true,fmt:r=>f1(r.med)},
+    {key:'worst',label:'Lågaste',num:true,fmt:r=>f1(r.worst)},
+    {key:'sd',label:'Std.avvik',num:true,fmt:r=>f1(r.sd)},
+    {key:'n',label:'Spel',num:true,fmt:r=>r.n},
+    {key:'days',label:'Dagar',num:true,fmt:r=>r.days},
+    {key:'wins',label:'Dagsigrar',num:true,fmt:r=>r.wins},
+    {key:'maxTps',label:'Maks trykk/s',num:true,fmt:r=>f1(r.maxTps)},
+    {key:'total',label:'Totalt omdr.',num:true,fmt:r=>f0(r.total)},
+    {key:'prog',label:'Framgang',num:true,fmt:r=>progCell(r.prog)},
+    {key:'last',label:'Sist spelt',num:true,val:r=>+r.last,fmt:r=>dateTime(r.last)}
+  ];
+  sortableTable($('personTable'),cols,persons,personSort);
+  const top=ranked.slice(0,15);
+  mk('cPersonBest',{type:'bar',data:{labels:top.map(p=>p.name),datasets:[
+    {label:'Beste',data:top.map(p=>p.best),backgroundColor:top.map(p=>teamColor(p.team)),borderColor:'#1a1a1a',borderWidth:2},
+    {label:'Snitt',data:top.map(p=>+p.avg.toFixed(1)),backgroundColor:top.map(p=>alpha(teamColor(p.team),.35)),borderColor:'#1a1a1a',borderWidth:1}
+  ]},options:{indexAxis:'y',scales:{x:roundsAxis},plugins:{tooltip:{callbacks:{afterLabel:c=>'Team: '+top[c.dataIndex].team}}}}});
+  const teamsIn=[...new Set(rows.map(r=>r.tname))];
+  mk('cScatter',{type:'scatter',data:{datasets:teamsIn.map(t=>({label:t,backgroundColor:alpha(teamColor(t),.75),borderColor:'#1a1a1a',borderWidth:1,pointRadius:5,pointHoverRadius:8,
+    data:rows.filter(r=>r.tname===t).map(r=>({x:r.taps,y:r.rounds,n:r.pname,d:r.d}))}))},
+    options:{scales:{x:{title:{display:true,text:'trykk på 10 sekund'}},y:roundsAxis},plugins:{tooltip:{callbacks:{label:c=>c.raw.n+': '+c.raw.x+' trykk → '+f1(c.raw.y)+' omdr.'}}}}});
+  const byGames=[...persons].sort((a,b)=>b.n-a.n).slice(0,15);
+  mk('cPersonGames',{type:'bar',data:{labels:byGames.map(p=>p.name),datasets:[{label:'Spel',data:byGames.map(p=>p.n),backgroundColor:byGames.map(p=>teamColor(p.team)),borderColor:'#1a1a1a',borderWidth:2}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+  const byTot=[...persons].sort((a,b)=>b.total-a.total).slice(0,15);
+  mk('cPersonTotal',{type:'bar',data:{labels:byTot.map(p=>p.name),datasets:[{label:'Omdreiingar totalt',data:byTot.map(p=>+p.total.toFixed(1)),backgroundColor:byTot.map(p=>teamColor(p.team)),borderColor:'#1a1a1a',borderWidth:2}]},
+    options:{plugins:{legend:{display:false}},scales:{y:roundsAxis}}});
+}
+
+function renderTime(rows,persons,teams,days){
+  const labels=days.map(d=>dayLabel(d.day));
+  mk('cDaily',{type:'bar',data:{labels,datasets:teams.map(t=>({label:t.name,data:days.map(d=>d.games.filter(g=>g.tname===t.name).length),backgroundColor:teamColor(t.name),borderColor:'#1a1a1a',borderWidth:1,borderRadius:3}))},
+    options:{scales:{x:{stacked:true},y:{stacked:true,beginAtZero:true,ticks:{precision:0},title:{display:true,text:'spel'}}}}});
+  mk('cDailyBest',{type:'line',data:{labels,datasets:[
+    {label:'Dagens beste',data:days.map(d=>d.r.rounds),borderColor:'#ff3d5a',backgroundColor:'#ff3d5a',borderWidth:3,tension:.3,pointRadius:4},
+    {label:'Snitt',data:days.map(d=>+d.avg.toFixed(1)),borderColor:'#4d8fff',backgroundColor:'#4d8fff',borderWidth:2,tension:.3,pointRadius:3},
+    {label:'Median',data:days.map(d=>median(d.games.map(g=>g.rounds))),borderColor:'#1ab87c',backgroundColor:'#1ab87c',borderWidth:2,borderDash:[6,4],tension:.3,pointRadius:2}
+  ]},options:{scales:{y:roundsAxis},plugins:{tooltip:{callbacks:{afterTitle:c=>c[0].datasetIndex===0?'av '+days[c[0].dataIndex].r.pname:''}}}}});
+  const recs=[];let max=-1;
+  rows.forEach(r=>{if(r.rounds>max){max=r.rounds;recs.push(r)}});
+  mk('cRecord',{type:'line',data:{labels:recs.map(r=>dateTime(r.d)),datasets:[{label:'Rekord',data:recs.map(r=>r.rounds),stepped:true,borderColor:'#1a1a1a',borderWidth:3,
+    pointBackgroundColor:recs.map(r=>teamColor(r.tname)),pointBorderColor:'#1a1a1a',pointRadius:7,pointHoverRadius:9,fill:{target:'origin'},backgroundColor:'rgba(255,224,138,.35)'}]},
+    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>recs[c.dataIndex].pname+' ('+recs[c.dataIndex].tname+'): '+f1(c.raw)}}},scales:{y:roundsAxis,x:{ticks:{maxRotation:45,autoSkip:true}}}}});
+  const seen=new Set();
+  const active=days.map(d=>{const ps=new Set(d.games.map(g=>g.pkey));let nu=0;ps.forEach(p=>{if(!seen.has(p)){nu++;seen.add(p)}});return {all:ps.size,nu}});
+  mk('cActive',{type:'bar',data:{labels,datasets:[
+    {label:'Unike spelarar',data:active.map(a=>a.all),backgroundColor:'#4d8fff',borderColor:'#1a1a1a',borderWidth:1},
+    {label:'Nye spelarar',data:active.map(a=>a.nu),backgroundColor:'#ffe08a',borderColor:'#1a1a1a',borderWidth:1}
+  ]},options:{scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+}
+
+function histogram(vals,step){
+  if(!vals.length)return {labels:[],counts:[],edges:[]};
+  const lo=Math.floor(Math.min(...vals)/step)*step,hi=Math.floor(Math.max(...vals)/step)*step;
+  const edges=[];for(let x=lo;x<=hi+1e-9;x+=step)edges.push(+x.toFixed(2));
+  const counts=edges.map(()=>0);
+  vals.forEach(v=>{counts[Math.min(edges.length-1,Math.floor((v-lo)/step))]++});
+  return {edges,counts,labels:edges.map(e=>f0(e)+'–'+f0(e+step))};
+}
+function renderDist(rows,persons){
+  const sc=rows.map(r=>r.rounds);
+  const step=(Math.max(...sc)-Math.min(...sc))>30?4:2;
+  const h=histogram(sc,step);
+  const m=mean(sc);
+  mk('cHist',{type:'bar',data:{labels:h.labels,datasets:[{label:'Spel',data:h.counts,backgroundColor:h.edges.map(e=>e<=m&&m<e+step?'#ff3d5a':'#ffb347'),borderColor:'#1a1a1a',borderWidth:1.5,barPercentage:1,categoryPercentage:.95}]},
+    options:{plugins:{legend:{display:false},tooltip:{callbacks:{title:c=>c[0].label+' omdreiingar'}}},scales:{y:{beginAtZero:true,ticks:{precision:0},title:{display:true,text:'spel'}},x:{title:{display:true,text:'omdreiingar (raud = der snittet ligg)'}}}}});
+  const th=histogram(rows.map(r=>r.tps),1);
+  mk('cTapHist',{type:'bar',data:{labels:th.edges.map(e=>f0(e)+'–'+f0(e+1)),datasets:[{label:'Spel',data:th.counts,backgroundColor:'#c44dff',borderColor:'#1a1a1a',borderWidth:1.5,barPercentage:1,categoryPercentage:.95}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}},x:{title:{display:true,text:'trykk per sekund'}}}}});
+  const hours=[...new Set(rows.map(r=>r.d.getHours()))].sort((a,b)=>a-b);
+  const hmin=Math.min(...hours),hmax=Math.max(...hours);const H=[];for(let h=hmin;h<=hmax;h++)H.push(h);
+  mk('cHour',{type:'bar',data:{labels:H.map(h=>String(h).padStart(2,'0')+':00'),datasets:[{label:'Spel',data:H.map(h=>rows.filter(r=>r.d.getHours()===h).length),backgroundColor:'#4d8fff',borderColor:'#1a1a1a',borderWidth:1.5}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+  mk('cHourAvg',{type:'line',data:{labels:H.map(h=>String(h).padStart(2,'0')+':00'),datasets:[{label:'Snitt',spanGaps:true,data:H.map(h=>{const g=rows.filter(r=>r.d.getHours()===h);return g.length?+mean(g.map(r=>r.rounds)).toFixed(1):null}),
+    borderColor:'#1ab87c',backgroundColor:'rgba(26,184,124,.15)',fill:true,tension:.35,borderWidth:3,pointRadius:4}]},options:{plugins:{legend:{display:false}},scales:{y:roundsAxis}}});
+  // varmekart
+  const grid=Array.from({length:7},()=>H.map(()=>0));
+  rows.forEach(r=>{const wd=(r.d.getDay()+6)%7;grid[wd][H.indexOf(r.d.getHours())]++});
+  const mx=Math.max(1,...grid.flat());
+  const heat=$('heat');heat.style.gridTemplateColumns='2.6rem repeat('+H.length+',minmax(26px,1fr))';
+  let html='<div class="lbl"></div>'+H.map(h=>'<div class="lbl" style="justify-content:center">'+String(h).padStart(2,'0')+'</div>').join('');
+  grid.forEach((row,i)=>{html+='<div class="lbl">'+WD[i]+'</div>'+row.map(v=>{const a=v/mx;return '<div title="'+WD[i]+': '+v+' spel" style="background:'+(v?'rgba(255,61,90,'+(0.15+0.85*a).toFixed(2)+')':'#f1ece2')+';color:'+(a>0.55?'#fff':'#1a1a1a')+'">'+(v||'')+'</div>'}).join('')});
+  heat.innerHTML=html;
+  // læringskurve
+  const byIdx=[];
+  persons.forEach(p=>p.games.forEach((g,i)=>{(byIdx[i]=byIdx[i]||[]).push(g.rounds)}));
+  const L=byIdx.map((a,i)=>({i:i+1,avg:mean(a),n:a.length})).filter(x=>x.n>=2).slice(0,30);
+  mk('cLearning',{type:'line',data:{labels:L.map(x=>x.i+'.'),datasets:[{label:'Snitt',data:L.map(x=>+x.avg.toFixed(1)),borderColor:'#ff9f1c',backgroundColor:'#ff9f1c',borderWidth:3,tension:.3,pointRadius:4}]},
+    options:{plugins:{legend:{display:false},tooltip:{callbacks:{afterLabel:c=>L[c.dataIndex].n+' spelarar'}}},scales:{y:roundsAxis,x:{title:{display:true,text:'spel nummer'}}}}});
+}
+
+function renderDays(rows,persons,days){
+  const w=[...persons].filter(p=>p.wins>0).sort((a,b)=>b.wins-a.wins).slice(0,15);
+  mk('cDayWins',{type:'bar',data:{labels:w.map(p=>p.name),datasets:[{label:'Dagsigrar',data:w.map(p=>p.wins),backgroundColor:w.map(p=>teamColor(p.team)),borderColor:'#1a1a1a',borderWidth:2}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0}}}}});
+  const rev=[...days].reverse();
+  $('dayTable').innerHTML='<thead><tr><th>Dag</th><th>Vinnar</th><th>Team</th><th class="num">Omdr.</th><th class="num">Spel</th><th class="num">Spelarar</th><th class="num">Snitt</th></tr></thead><tbody>'+
+    rev.map(d=>'<tr><td>'+dayLabel(d.day)+'</td><td><b>'+esc(d.r.pname)+'</b></td><td>'+teamCell(d.r.tname)+'</td><td class="num"><b>'+f1(d.r.rounds)+'</b></td><td class="num">'+d.games.length+'</td><td class="num">'+d.players+'</td><td class="num">'+f1(d.avg)+'</td></tr>').join('')+'</tbody>';
+}
+
+/* ----- profilar ----- */
+function bindProfileSelects(){
+  ['pSel','pCmp'].forEach(id=>$(id).addEventListener('change',()=>{const r=filtered();const ps=personStats(r);renderPlayer(r,ps,teamStats(r,ps))}));
+  $('tSel').addEventListener('change',()=>{const r=filtered();const ps=personStats(r);renderTeamProfile(r,ps,teamStats(r,ps))});
+}
+function fillProfileSelects(persons,teams){
+  const keep=(sel,opts,def)=>{const cur=sel.value;sel.innerHTML=opts;if([...sel.options].some(o=>o.value===cur))sel.value=cur;else if(def!=null)sel.value=def};
+  const sorted=[...persons].sort((a,b)=>a.name.localeCompare(b.name,'nb'));
+  const opts=sorted.map(p=>'<option value="'+esc(p.key)+'">'+esc(p.name)+' ('+esc(p.team)+')</option>').join('');
+  let def=null;try{def=(localStorage.getItem('fgh-name')||'').toLowerCase()}catch(e){}
+  if(!persons.some(p=>p.key===def))def=[...persons].sort((a,b)=>b.n-a.n)[0].key;
+  keep($('pSel'),opts,def);
+  keep($('pCmp'),'<option value="">Ingen</option>'+opts,'');
+  let tdef=null;try{tdef=localStorage.getItem('fgh-team')}catch(e){}
+  if(!teams.some(t=>t.name===tdef))tdef=teams[0].name;
+  keep($('tSel'),teams.map(t=>'<option value="'+esc(t.name)+'">'+esc(t.name)+'</option>').join(''),tdef);
+}
+function renderPlayer(rows,persons,teams){
+  const p=persons.find(x=>x.key===$('pSel').value)||persons[0];if(!p)return;
+  const c=persons.find(x=>x.key===$('pCmp').value&&x.key!==p.key);
+  const ranked=[...persons].sort((a,b)=>b.best-a.best);
+  const rank=ranked.indexOf(p)+1;
+  const pct=f0(100*rows.filter(r=>r.rounds<p.avg).length/rows.length);
+  const K=[['Spel',p.n],['Beste',f1(p.best)],['Snitt',f1(p.avg)],['Median',f1(p.med)],['Plassering',rank+' av '+persons.length],['Betre enn',pct+' % av alle spel'],['Dagsigrar',p.wins],['Maks trykk/s',f1(p.maxTps)],['Framgang',isNaN(p.prog)?'–':(p.prog>=0?'+':'')+f1(p.prog)],['Team',p.team]];
+  $('pKpis').innerHTML=K.map(k=>'<div class="kpi"><b>'+esc(String(k[1]))+'</b><span>'+k[0]+'</span></div>').join('');
+  const overall=mean(rows.map(r=>r.rounds));
+  const n=Math.max(p.n,c?c.n:0);
+  const series=(q,col)=>{let mx=-1;return {pb:q.games.map(g=>{const is=g.rounds>mx;if(is)mx=g.rounds;return is}),col}};
+  const sp=series(p),sc=c?series(c):null;
+  const ds=[{label:p.name,data:p.games.map(g=>g.rounds),borderColor:teamColor(p.team),backgroundColor:teamColor(p.team),borderWidth:3,tension:.25,
+      pointRadius:sp.pb.map(b=>b?7:3),pointBackgroundColor:sp.pb.map(b=>b?'#ffe08a':teamColor(p.team)),pointBorderColor:'#1a1a1a'}];
+  if(c){const cc=teamColor(c.team)===teamColor(p.team)?'#1a1a1a':teamColor(c.team);
+    ds.push({label:c.name,data:c.games.map(g=>g.rounds),borderColor:cc,backgroundColor:cc,borderWidth:2,borderDash:[5,4],tension:.25,pointRadius:sc.pb.map(b=>b?6:2),pointBackgroundColor:sc.pb.map(b=>b?'#ffe08a':cc)})}
+  ds.push({label:'Snitt alle',data:Array(n).fill(+overall.toFixed(1)),borderColor:'#999',borderDash:[3,4],borderWidth:1.5,pointRadius:0});
+  mk('cPLine',{type:'line',data:{labels:Array.from({length:n},(_,i)=>(i+1)+'.'),datasets:ds},
+    options:{scales:{y:roundsAxis,x:{title:{display:true,text:'spel nummer'}}},plugins:{tooltip:{callbacks:{afterLabel:ctx=>{const q=ctx.datasetIndex===0?p:(c&&ctx.datasetIndex===1?c:null);const g=q&&q.games[ctx.dataIndex];return g?dateTime(g.d)+', '+g.taps+' trykk':''}}}}}});
+  const all=rows.map(r=>r.rounds);const step=(Math.max(...all)-Math.min(...all))>30?4:2;
+  const ha=histogram(all,step);const lo=ha.edges[0];
+  const cnt=(vals)=>{const a=ha.edges.map(()=>0);vals.forEach(v=>a[Math.min(a.length-1,Math.floor((v-lo)/step))]++);return a};
+  const pa=cnt(p.games.map(g=>g.rounds)),aa=ha.counts;
+  mk('cPHist',{type:'bar',data:{labels:ha.labels,datasets:[
+    {label:p.name+' (%)',data:pa.map(v=>+(100*v/p.n).toFixed(1)),backgroundColor:teamColor(p.team),borderColor:'#1a1a1a',borderWidth:1.5},
+    {label:'Alle (%)',data:aa.map(v=>+(100*v/rows.length).toFixed(1)),backgroundColor:'rgba(0,0,0,.15)',borderColor:'#1a1a1a',borderWidth:1}
+  ]},options:{scales:{y:{beginAtZero:true,title:{display:true,text:'% av spela'}}}}});
+  let mx=-1;const pbIds=new Set();p.games.forEach(g=>{if(g.rounds>mx){mx=g.rounds;pbIds.add(g.id)}});
+  $('pRecent').innerHTML=[...p.games].reverse().slice(0,40).map(g=>'<li class="'+(pbIds.has(g.id)?'pb':'')+'"><span>'+dateTime(g.d)+(pbIds.has(g.id)?' · ny PB':'')+'</span><span>'+g.taps+' trykk · <b>'+f1(g.rounds)+'</b></span></li>').join('');
+  const team=teams.find(t=>t.name===p.team);
+  const groups=[[p.name,p],[team?'Teamet '+team.name:'Teamet',team],['Alle',{avg:overall,best:Math.max(...all),avgTps:mean(rows.map(r=>r.tps))}]];
+  if(c)groups.splice(1,0,[c.name,c]);
+  mk('cPCompare',{type:'bar',data:{labels:['Snitt','Beste','Trykk/s (snitt)'],datasets:groups.filter(g=>g[1]).map((g,i)=>({label:g[0],
+    data:[g[1].avg,g[1].best,g[1].avgTps].map(v=>+(+v).toFixed(1)),backgroundColor:[teamColor(p.team),c?teamColor(c.team)+'aa':'#ffe08a','#ffe08a','#d9d4ca'][i]||'#ccc',borderColor:'#1a1a1a',borderWidth:1.5}))},
+    options:{scales:{y:{beginAtZero:true}}}});
+}
+function renderTeamProfile(rows,persons,teams){
+  const t=teams.find(x=>x.name===$('tSel').value)||teams[0];if(!t)return;
+  const rank=teams.indexOf(t)+1;
+  const K=[['Lagscore',f1(t.score)],['Plassering',rank+' av '+teams.length],['Medlemmar',t.nm],['Spel',t.n],['Beste',f1(t.best)],['Snitt',f1(t.avg)],['Dagsigrar',t.wins],['Speledagar',t.days]];
+  $('tKpis').innerHTML=K.map(k=>'<div class="kpi"><b>'+esc(String(k[1]))+'</b><span>'+k[0]+'</span></div>').join('');
+  const mem=t.members.map(p=>{const g=p.games.filter(x=>x.tname===t.name);const sc=g.map(x=>x.rounds);return {name:p.name,n:g.length,best:Math.max(...sc),avg:mean(sc),last:g[g.length-1].d,maxTps:Math.max(...g.map(x=>x.tps))}}).sort((a,b)=>b.best-a.best);
+  const col=teamColor(t.name);
+  mk('cTMembers',{type:'bar',data:{labels:mem.map(m=>m.name),datasets:[
+    {label:'Beste',data:mem.map(m=>m.best),backgroundColor:col,borderColor:'#1a1a1a',borderWidth:2},
+    {label:'Snitt',data:mem.map(m=>+m.avg.toFixed(1)),backgroundColor:alpha(col,.35),borderColor:'#1a1a1a',borderWidth:1},
+    {type:'line',label:'Lagscore',data:mem.map(()=>+t.score.toFixed(1)),borderColor:'#1a1a1a',borderDash:[6,4],borderWidth:2,pointRadius:0}
+  ]},options:{scales:{y:roundsAxis}}});
+  const shades=mem.map((_,i)=>alpha(col,Math.max(.25,1-i*0.13)));
+  mk('cTContrib',{type:'doughnut',data:{labels:mem.map(m=>m.name),datasets:[{data:mem.map(m=>m.n),backgroundColor:shades,borderColor:'#1a1a1a',borderWidth:2}]},
+    options:{cutout:'50%',plugins:{legend:{position:'right'},tooltip:{callbacks:{label:c=>c.label+': '+c.raw+' spel ('+f0(100*c.raw/t.n)+' %)'}}}}});
+  const tdays=[...new Set(t.games.map(g=>g.day))].sort();
+  mk('cTLine',{type:'line',data:{labels:tdays.map(dayLabel),datasets:[
+    {label:'Beste',data:tdays.map(k=>Math.max(...t.games.filter(g=>g.day===k).map(g=>g.rounds))),borderColor:col,backgroundColor:col,borderWidth:3,tension:.3,pointRadius:4},
+    {label:'Snitt',data:tdays.map(k=>+mean(t.games.filter(g=>g.day===k).map(g=>g.rounds)).toFixed(1)),borderColor:'#1a1a1a',backgroundColor:'#1a1a1a',borderWidth:2,borderDash:[5,4],tension:.3,pointRadius:3}
+  ]},options:{scales:{y:roundsAxis}}});
+  $('tTable').innerHTML='<thead><tr><th>#</th><th>Spelar</th><th class="num">Beste</th><th class="num">Snitt</th><th class="num">Spel</th><th class="num">Maks trykk/s</th></tr></thead><tbody>'+
+    mem.map((m,i)=>'<tr><td>'+(i+1)+'</td><td><b>'+esc(m.name)+'</b></td><td class="num"><b>'+f1(m.best)+'</b></td><td class="num">'+f1(m.avg)+'</td><td class="num">'+m.n+'</td><td class="num">'+f1(m.maxTps)+'</td></tr>').join('')+'</tbody>';
+}
+
+/* ================= Last og oppdater ================= */
+async function load(silent){
+  const st=$('status');
+  if(!silent)st.textContent='Hentar data …';
+  try{
+    const raw=await fetchAll();
+    ALL=prep(raw);assignColors(ALL);
+    const cur=$('fTeam').value;
+    const teams=[...new Set(ALL.map(r=>r.tname))].sort((a,b)=>a===NO_TEAM?1:b===NO_TEAM?-1:a.localeCompare(b,'nb'));
+    $('fTeam').innerHTML='<option value="all">Alle team</option>'+teams.map(t=>'<option value="'+esc(t)+'">'+esc(t)+'</option>').join('');
+    if(teams.includes(cur))$('fTeam').value=cur;
+    if(!ALL.length){$('content').innerHTML='<div class="empty">Ingen har spelt enno. Gå til hjulet og bli den første!</div>';st.textContent='';return}
+    render();
+    st.textContent=f0(ALL.length)+' spel · oppdatert kl. '+new Date().toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'});
+  }catch(e){
+    console.error(e);
+    st.textContent='Klarte ikkje hente data';
+    if(!ALL.length)$('content').innerHTML='<div class="err"><b>Klarte ikkje hente statistikken.</b><br>'+esc(e.message)+'<br><br>Sjekk nettilkoplinga og prøv «Oppdater» igjen.</div>';
+  }
+}
+setupChartDefaults();
+if(!window.Chart)$('status').textContent='Grafbiblioteket lasta ikkje. Tabellane fungerer likevel.';
+$('fPeriod').addEventListener('change',()=>ALL.length&&render());
+$('fTeam').addEventListener('change',()=>ALL.length&&render());
+$('refresh').addEventListener('click',()=>load());
+load();
+setInterval(()=>{if(!document.hidden)load(true)},60000);
+
+/* ================= Alltid nyaste versjon ================= */
+async function checkForUpdate(){
+  if(location.protocol==='file:')return;
+  try{
+    const u=new URL(location.href);u.search='';u.hash='';u.searchParams.set('_',Date.now());
+    const r=await fetch(u.toString(),{cache:'no-store'});if(!r.ok)return;
+    const m=(await r.text()).match(/const STATS_VERSION='([^']+)'/);
+    if(!m||m[1]===STATS_VERSION)return;
+    const key='fgh-stats-tried-'+m[1];
+    try{if(sessionStorage.getItem(key))return;sessionStorage.setItem(key,'1')}catch(e){}
+    const t=document.createElement('div');t.className='update-toast';t.textContent='Hentar nyaste versjon …';document.body.appendChild(t);
+    const nu=new URL(location.href);nu.searchParams.set('v',m[1]);setTimeout(()=>location.replace(nu.toString()),500);
+  }catch(e){}
+}
+checkForUpdate();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkForUpdate()});
+</script>
+</body>
+</html>

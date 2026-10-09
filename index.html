@@ -150,7 +150,35 @@ h1 em{font-style:normal;color:transparent;-webkit-text-stroke:2px var(--ink)}
 .name-field label{font-size:.82rem;color:#777}
 .save-box{cursor:default;width:min(90vw,440px);display:flex;flex-direction:column;gap:.4rem;background:#fff;border:3px solid var(--ink);border-radius:18px;box-shadow:5px 5px 0 var(--ink);padding:.9rem 1rem}
 .save-box label{font-weight:500;font-size:.95rem}
-.save-row{display:flex;gap:.5rem}
+.save-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem}
+.field{display:flex;flex-direction:column;gap:.3rem}
+.field label{font-size:.82rem;color:#666;font-weight:500}
+.save-box #nameInput,#teamInput{width:100%;flex:none;min-width:0;font:500 16px 'DM Sans',sans-serif;border:2px solid var(--ink);border-radius:12px;padding:.7rem .8rem;background:#fff}
+.save-box.saved #teamInput{background:#f3f3f3}
+.save-box #saveBtn{padding:.75rem 1rem;margin-top:.2rem}
+.combo{position:relative}
+.team-sugg{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;background:#fff;border:2px solid var(--ink);border-radius:12px;box-shadow:4px 4px 0 var(--ink);list-style:none;max-height:232px;overflow:auto;padding:.25rem}
+.team-sugg li{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;padding:.6rem .7rem;border-radius:8px;cursor:pointer}
+.team-sugg li[aria-selected="true"]{background:var(--yellow)}
+.team-sugg li .cnt{color:#888;font-size:.78rem;flex:none}
+.team-sugg li.new{color:var(--red);font-weight:700}
+.team-sugg mark{background:none;font-weight:800;color:inherit;text-decoration:underline}
+.team-chips{display:flex;flex-wrap:wrap;gap:.35rem}
+.chip{border:2px solid var(--ink);background:#fff;border-radius:99px;padding:.32rem .8rem;font:500 .88rem 'DM Sans',sans-serif;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--ink);color:#fff}
+.chip:disabled{opacity:.5;cursor:default}
+.team-hint{font-size:.86rem;min-height:1.15em;color:#666;line-height:1.4}
+.team-hint.ok{color:var(--green);font-weight:700}
+.team-hint.new{color:#444}
+.team-hint.warn{color:#b35c00}
+.team-hint button{font:700 .82rem 'DM Sans',sans-serif;border:2px solid var(--ink);border-radius:99px;background:#fff;padding:.2rem .65rem;margin:.3rem .3rem 0 0;cursor:pointer}
+.team-hint button.yes{background:var(--yellow)}
+.stats-link{display:inline-flex;align-items:center;gap:.35rem;font:700 .95rem 'DM Sans',sans-serif;color:var(--ink);text-decoration:none;background:#fff;border:2px solid var(--ink);border-radius:99px;padding:.45rem 1rem;box-shadow:3px 3px 0 var(--ink)}
+.stats-link:hover{background:var(--yellow)}
+.board .stats-link{margin-top:.9rem;font-size:.88rem;box-shadow:2px 2px 0 var(--ink)}
+@media (max-width:600px){header .stats-link{padding:.3rem .7rem;font-size:.82rem;box-shadow:2px 2px 0 var(--ink)}}
+.board .nm small{display:block;font-size:.75rem;color:#888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board li.new .nm small{color:#555}
 #nameInput{flex:1;min-width:0;font:500 16px 'DM Sans',sans-serif;border:2px solid var(--ink);border-radius:12px;padding:.7rem .8rem;background:#fff}
 #saveBtn{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;background:var(--red);color:#fff;border:2px solid var(--ink);border-radius:12px;padding:0 1.2rem;cursor:pointer}
 #saveBtn:disabled{background:#ccc;cursor:default}
@@ -278,6 +306,7 @@ h1 em{font-style:normal;color:transparent;-webkit-text-stroke:2px var(--ink)}
   <header>
     <h1>Fredagsgif<br><em>hjulet</em></h1>
     <p class="intro">Trykk så fort du klarer i <strong>10 sekund</strong>. Kvart trykk gir hjulet meir fart. Når tida er ute, snurrar det fritt, og flest omdreiingar vinn.</p>
+    <a class="stats-link" href="statistikk.html">📊 Statistikk</a>
   </header>
 
   <main class="game" id="game">
@@ -320,6 +349,7 @@ h1 em{font-style:normal;color:transparent;-webkit-text-stroke:2px var(--ink)}
       <button class="tab" role="tab" data-tab="all" aria-selected="false" type="button">Heile tida</button>
     </div>
     <ol id="boardList"></ol>
+    <a class="stats-link" href="statistikk.html">📊 Sjå all statistikk</a>
   </aside>
 </div>
 
@@ -332,11 +362,22 @@ h1 em{font-style:normal;color:transparent;-webkit-text-stroke:2px var(--ink)}
       <span class="record" id="rRecord" hidden>Ny rekord!</span>
     </div>
     <form class="save-box" id="saveBox" novalidate>
-      <label for="nameInput">Skriv namnet ditt for å kome på topplista</label>
-      <div class="save-row">
-        <input id="nameInput" maxlength="20" autocomplete="nickname" enterkeyhint="done" placeholder="Namnet ditt">
-        <button type="submit" id="saveBtn">Lagre</button>
+      <p class="save-title">Kom på topplista</p>
+      <div class="field">
+        <label for="nameInput">Namn</label>
+        <input id="nameInput" maxlength="20" autocomplete="nickname" enterkeyhint="next" placeholder="Namnet ditt">
       </div>
+      <div class="field">
+        <label for="teamInput">Team</label>
+        <div class="combo">
+          <input id="teamInput" maxlength="30" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="done"
+                 placeholder="Vel eller skriv team" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="teamSugg">
+          <ul id="teamSugg" class="team-sugg" role="listbox" hidden></ul>
+        </div>
+        <div class="team-chips" id="teamChips"></div>
+        <p class="team-hint" id="teamHint" aria-live="polite"></p>
+      </div>
+      <button type="submit" id="saveBtn">Lagre</button>
       <p class="save-msg" id="saveMsg" role="status"></p>
     </form>
     <div class="gif-frame loading" id="gifFrame">
@@ -833,17 +874,148 @@ function sbHeaders(extra){
 function withTimeout(p,ms){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),ms))])}
 function startOfToday(){const d=new Date();d.setHours(0,0,0,0);return d.toISOString()}
 
+let hasTeamCol=true; // blir false om team-kolonnen ikkje er oppretta i Supabase enno
 async function sbFetchTop(tab){
-  let q=SUPABASE_URL+'/rest/v1/scores?select=id,name,rounds,taps,created_at&order=rounds.desc,created_at.asc&limit=10';
+  let q=SUPABASE_URL+'/rest/v1/scores?select=id,name,rounds,taps,created_at'+(hasTeamCol?',team':'')+'&order=rounds.desc,created_at.asc&limit=10';
   if(tab==='today')q+='&created_at=gte.'+encodeURIComponent(startOfToday());
   const r=await withTimeout(fetch(q,{headers:sbHeaders()}),6000);
-  if(!r.ok)throw new Error('HTTP '+r.status+' '+(await r.text()));
-  return (await r.json()).map(s=>({id:s.id,name:s.name,rounds:+s.rounds,taps:s.taps,date:s.created_at}));
+  if(!r.ok){
+    const txt=await r.text();
+    if(hasTeamCol&&/team/i.test(txt)){hasTeamCol=false;return sbFetchTop(tab)}
+    throw new Error('HTTP '+r.status+' '+txt);
+  }
+  return (await r.json()).map(s=>({id:s.id,name:s.name,team:s.team||'',rounds:+s.rounds,taps:s.taps,date:s.created_at}));
 }
+async function sbFetchTeams(){
+  if(!hasTeamCol)return [];
+  const q=SUPABASE_URL+'/rest/v1/scores?select=team&team=not.is.null&order=created_at.desc&limit=300';
+  const r=await withTimeout(fetch(q,{headers:sbHeaders()}),6000);
+  if(!r.ok)return [];
+  return (await r.json()).map(x=>x.team);
+}
+/* ---------- Team: autoutfylling utan duplikat ---------- */
+let knownTeams=[], teamExtra=[], confirmedNewTeam=null, comboIdx=-1, comboItems=[];
+const normTeam=s=>(s||'').trim().replace(/\s+/g,' ').toLowerCase();
+const cleanTeam=s=>(s||'').trim().replace(/\s+/g,' ');
+function lev(a,b){
+  const m=a.length,n=b.length;if(!m)return n;if(!n)return m;
+  let prev=Array.from({length:n+1},(_,j)=>j);
+  for(let i=1;i<=m;i++){const cur=[i];for(let j=1;j<=n;j++)cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=cur}
+  return prev[n];
+}
+function updateTeamList(extra){
+  if(extra)teamExtra=extra;
+  const variants=new Map();
+  const src=teamExtra.length?teamExtra:(boardCache.all||[]).map(s=>s.team);
+  [...src,...loadLocal().map(s=>s.team)]
+    .forEach(tm=>{
+      const c=cleanTeam(tm);if(!c)return;const k=c.toLowerCase();
+      if(!variants.has(k))variants.set(k,{count:0,spell:new Map()});
+      const v=variants.get(k);v.count++;v.spell.set(c,(v.spell.get(c)||0)+1);
+    });
+  knownTeams=[...variants.entries()].map(([k,v])=>({key:k,name:[...v.spell.entries()].sort((a,b)=>b[1]-a[1])[0][0],count:v.count}))
+    .sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name,'nb'));
+  renderTeamChips();updateTeamHint();
+}
+function exactTeam(v){const k=normTeam(v);return k?knownTeams.find(t=>t.key===k):null}
+function similarTeam(v){
+  const k=normTeam(v);if(k.length<2)return null;
+  let best=null,bd=99;
+  for(const t of knownTeams){
+    if(t.key===k)return null;
+    const lim=Math.max(1,Math.floor(Math.max(k.length,t.key.length)/4));
+    const d=lev(k,t.key);
+    const pref=(t.key.startsWith(k)||k.startsWith(t.key))&&Math.min(k.length,t.key.length)>=3;
+    if((d<=lim||pref)&&d<bd){best=t;bd=d}
+  }
+  return best;
+}
+function escHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function renderTeamChips(){
+  const box=$('teamChips');if(!box)return;box.innerHTML='';
+  const cur=normTeam($('teamInput').value);
+  knownTeams.slice(0,10).forEach(t=>{
+    const b=document.createElement('button');b.type='button';b.className='chip'+(t.key===cur?' on':'');b.textContent=t.name;
+    b.disabled=$('teamInput').disabled;
+    b.addEventListener('click',()=>pickTeam(t.name));box.appendChild(b);
+  });
+}
+function updateTeamHint(){
+  const h=$('teamHint');if(!h)return;
+  const v=$('teamInput').value,c=cleanTeam(v);
+  h.className='team-hint';h.innerHTML='';
+  if(!c||$('saveBox').classList.contains('saved'))return;
+  const ex=exactTeam(c);
+  if(ex){h.className='team-hint ok';h.textContent='✓ Eksisterande team: '+ex.name;return}
+  const sim=similarTeam(c);
+  if(sim&&confirmedNewTeam!==normTeam(c)){
+    h.className='team-hint warn';
+    h.innerHTML='Meinte du «'+escHtml(sim.name)+'»?<br>';
+    const yes=document.createElement('button');yes.type='button';yes.className='yes';yes.textContent='Ja, bruk «'+sim.name+'»';
+    yes.addEventListener('click',()=>pickTeam(sim.name));
+    const no=document.createElement('button');no.type='button';no.textContent='Nei, lag nytt team';
+    no.addEventListener('click',()=>{confirmedNewTeam=normTeam($('teamInput').value);updateTeamHint();$('teamInput').focus()});
+    h.appendChild(yes);h.appendChild(no);return;
+  }
+  if(knownTeams.some(t=>t.key.includes(normTeam(c)))&&confirmedNewTeam!==normTeam(c)){h.textContent='Vel eit team frå lista, eller skriv vidare for å lage eit nytt.';return}
+  h.className='team-hint new';h.textContent='＋ Nytt team blir oppretta: «'+c+'»';
+}
+function pickTeam(name){
+  $('teamInput').value=name;confirmedNewTeam=null;closeCombo();renderTeamChips();updateTeamHint();
+  $('saveMsg').textContent='';$('saveMsg').className='save-msg';
+}
+function openCombo(){
+  const inp=$('teamInput'),ul=$('teamSugg');if(inp.disabled)return;
+  const raw=inp.value,q=normTeam(raw),c=cleanTeam(raw);
+  const list=q?knownTeams.filter(t=>t.key.includes(q)):knownTeams;
+  comboItems=list.slice(0,8).map(t=>({type:'team',name:t.name,count:t.count,key:t.key}));
+  if(c&&!exactTeam(c))comboItems.push({type:'new',name:c});
+  if(!comboItems.length||(comboItems.length===1&&comboItems[0].type==='team'&&comboItems[0].key===q)){closeCombo();return}
+  comboIdx=q?0:-1;
+  ul.innerHTML='';
+  comboItems.forEach((it,i)=>{
+    const li=document.createElement('li');li.role='option';li.id='ts'+i;
+    if(it.type==='new'){li.className='new';li.textContent='＋ Lag nytt team «'+it.name+'»'}
+    else{
+      const nm=document.createElement('span');
+      const lo=it.name.toLowerCase(),p=q?lo.indexOf(q):-1;
+      nm.innerHTML=p>=0?escHtml(it.name.slice(0,p))+'<mark>'+escHtml(it.name.slice(p,p+q.length))+'</mark>'+escHtml(it.name.slice(p+q.length)):escHtml(it.name);
+      const cn=document.createElement('span');cn.className='cnt';cn.textContent=it.count+(it.count===1?' spel':' spel');
+      li.appendChild(nm);li.appendChild(cn);
+    }
+    li.addEventListener('pointerdown',e=>{e.preventDefault();chooseCombo(i)});
+    ul.appendChild(li);
+  });
+  ul.hidden=false;inp.setAttribute('aria-expanded','true');markCombo();
+}
+function markCombo(){
+  [...$('teamSugg').children].forEach((li,i)=>li.setAttribute('aria-selected',i===comboIdx?'true':'false'));
+  $('teamInput').setAttribute('aria-activedescendant',comboIdx>=0?'ts'+comboIdx:'');
+  const li=$('teamSugg').children[comboIdx];if(li)li.scrollIntoView({block:'nearest'});
+}
+function closeCombo(){const ul=$('teamSugg');if(!ul)return;ul.hidden=true;comboIdx=-1;$('teamInput').setAttribute('aria-expanded','false')}
+function chooseCombo(i){
+  const it=comboItems[i];if(!it)return;
+  if(it.type==='team')pickTeam(it.name);
+  else{$('teamInput').value=it.name;confirmedNewTeam=normTeam(it.name);closeCombo();renderTeamChips();updateTeamHint()}
+}
+(function(){
+  const inp=$('teamInput');
+  inp.addEventListener('input',()=>{confirmedNewTeam=null;openCombo();renderTeamChips();updateTeamHint()});
+  inp.addEventListener('focus',openCombo);
+  inp.addEventListener('blur',()=>setTimeout(closeCombo,120));
+  inp.addEventListener('keydown',e=>{
+    const open=!$('teamSugg').hidden;
+    if(e.key==='ArrowDown'){e.preventDefault();if(!open)openCombo();else{comboIdx=Math.min(comboItems.length-1,comboIdx+1);markCombo()}}
+    else if(e.key==='ArrowUp'){if(open){e.preventDefault();comboIdx=Math.max(0,comboIdx-1);markCombo()}}
+    else if(e.key==='Enter'){if(open&&comboIdx>=0){e.preventDefault();chooseCombo(comboIdx)}}
+    else if(e.key==='Escape'){if(open){e.preventDefault();e.stopPropagation();closeCombo()}}
+  });
+})();
 async function sbInsert(entry){
   const r=await withTimeout(fetch(SUPABASE_URL+'/rest/v1/scores',{
     method:'POST',headers:sbHeaders({'Prefer':'return=representation'}),
-    body:JSON.stringify({name:entry.name,rounds:entry.rounds,taps:entry.taps})
+    body:JSON.stringify(Object.assign({name:entry.name,rounds:entry.rounds,taps:entry.taps},hasTeamCol&&entry.team?{team:entry.team}:{}))
   }),6000);
   if(!r.ok)throw new Error('HTTP '+r.status+' '+(await r.text()));
   const rows=await r.json();return rows[0];
@@ -864,6 +1036,7 @@ async function refreshBoard(){
   if(sbOk){
     try{
       const [today,all]=await Promise.all([sbFetchTop('today'),sbFetchTop('all')]);
+      sbFetchTeams().then(updateTeamList).catch(()=>{});
       boardCache={today,all};setBoardNote('Felles for alle som spelar.');
     }catch(e){
       console.warn('Supabase:',e);sbOk=false;
@@ -878,9 +1051,9 @@ async function refreshBoard(){
 }
 function setBoardNote(t){$('boardNote').textContent=t}
 
-async function saveScore(name,r,t){
+async function saveScore(name,team,r,t){
   if(t===0)return false;
-  const entry={name:name.slice(0,20),rounds:Math.round(r*10)/10,taps:t,date:new Date().toISOString()};
+  const entry={name:name.slice(0,20),team:(team||'').slice(0,30),rounds:Math.round(r*10)/10,taps:t,date:new Date().toISOString()};
   const bestBefore=(boardCache.all[0]||{}).rounds||0;
   if(!sbOk&&SB_ON)sbOk=true; // prøv nettet igjen
   if(sbOk){
@@ -903,7 +1076,7 @@ function renderMini(){
   list.forEach((s,i)=>{
     const li=document.createElement('li');if(newEntryId!=null&&s.id===newEntryId)li.className='new';
     li.innerHTML='<span class="md">'+medals[i]+'</span><span class="nm"></span><span class="sc">'+fmt1(s.rounds)+'</span>';
-    li.querySelector('.nm').textContent=s.name;ol.appendChild(li);
+    li.querySelector('.nm').textContent=s.name;if(s.team)li.title=s.team;ol.appendChild(li);
   });
 }
 $('mbMore').addEventListener('click',()=>{
@@ -918,9 +1091,10 @@ function renderBoard(){
   list.forEach((s,i)=>{
     const li=document.createElement('li');if(newEntryId!=null&&s.id===newEntryId)li.className='new';
     li.innerHTML='<span class="rk">'+(i+1)+'</span><span class="nm"></span><span class="sc">'+fmt1(s.rounds)+'</span>';
-    li.querySelector('.nm').textContent=s.name;
+    const nm=li.querySelector('.nm');nm.textContent=s.name;
+    if(s.team){const sm=document.createElement('small');sm.textContent=s.team;nm.appendChild(sm)}
     const d=new Date(s.date);
-    li.title=s.taps+' trykk, '+(isNaN(d)?'':d.toLocaleDateString('nb-NO'));
+    li.title=(s.team?s.team+', ':'')+s.taps+' trykk, '+(isNaN(d)?'':d.toLocaleDateString('nb-NO'));
     ol.appendChild(li);
   });
 }
@@ -939,7 +1113,10 @@ function showResult(idx,spinSec,isRecord){
   $('rRecord').hidden=!isRecord;
   const box=$('saveBox');
   box.hidden=taps===0;box.classList.remove('saved');
-  $('nameInput').disabled=false;$('saveBtn').disabled=false;$('saveBtn').textContent='Lagre';
+  $('nameInput').disabled=false;$('teamInput').disabled=false;$('saveBtn').disabled=false;$('saveBtn').textContent='Lagre';
+  try{$('teamInput').value=localStorage.getItem('fgh-team')||''}catch(e){}
+  confirmedNewTeam=null;closeCombo();
+  updateTeamList();
   $('saveMsg').textContent='';$('saveMsg').className='save-msg';
   try{$('nameInput').value=localStorage.getItem('fgh-name')||''}catch(e){}
   if(!isTouch&&taps>0)setTimeout(()=>{$('nameInput').focus({preventScroll:true});$('nameInput').select()},500);
@@ -974,18 +1151,30 @@ function closeModal(){
   if(state==='done'){state='idle';resetHud();if(!isTouch)btn.focus({preventScroll:true})}
 }
 $('modal').addEventListener('click',e=>{if(!e.target.closest('.result,.gif-frame,.song-card,.again-btn,.save-box'))closeModal()});
+$('nameInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('teamInput').focus()}});
 $('saveBox').addEventListener('submit',async e=>{
   e.preventDefault();
   if(!lastResult||lastResult.saved)return;
   const name=$('nameInput').value.trim();
   const msg=$('saveMsg');
   if(!name){msg.textContent='Skriv inn eit namn først.';msg.className='save-msg err';$('nameInput').focus();return}
-  try{localStorage.setItem('fgh-name',name)}catch(e){}
-  $('saveBtn').disabled=true;$('nameInput').disabled=true;$('saveBtn').textContent='Lagrar …';
+  let team=cleanTeam($('teamInput').value);
+  if(!team){msg.textContent='Vel eit team, eller skriv namnet på eit nytt.';msg.className='save-msg err';$('teamInput').focus();return}
+  const ex=exactTeam(team);
+  if(ex)team=ex.name; // bruk eksisterande skrivemåte
+  else{
+    const sim=similarTeam(team);
+    if(sim&&confirmedNewTeam!==normTeam(team)){
+      msg.textContent='Sjekk teamnamnet før du lagrar.';msg.className='save-msg err';updateTeamHint();return;
+    }
+  }
+  $('teamInput').value=team;closeCombo();
+  try{localStorage.setItem('fgh-name',name);localStorage.setItem('fgh-team',team)}catch(e){}
+  $('saveBtn').disabled=true;$('nameInput').disabled=true;$('teamInput').disabled=true;$('saveBtn').textContent='Lagrar …';
   msg.textContent='';msg.className='save-msg';
-  await saveScore(name,lastResult.rounds,lastResult.taps).catch(()=>false);
+  await saveScore(name,team,lastResult.rounds,lastResult.taps).catch(()=>false);
   lastResult.saved=true;
-  $('saveBox').classList.add('saved');$('saveBtn').textContent='Lagra';
+  $('saveBox').classList.add('saved');$('saveBtn').textContent='Lagra';renderTeamChips();updateTeamHint();
   const pos=(boardCache.today||[]).findIndex(s=>s.id===newEntryId);
   msg.className='save-msg ok';
   msg.textContent=pos>=0?'Lagra! Du er nummer '+(pos+1)+' på dagens toppliste.':'Lagra! Du kom ikkje på topp 10 i dag, men resultatet er registrert.';
@@ -1125,7 +1314,7 @@ if(document.fonts&&document.fonts.load)document.fonts.load('800 92px Syne').then
 document.addEventListener('visibilitychange',()=>{last=performance.now()});
 /* ================= Alltid nyaste versjon ================= */
 // Auk dette talet kvar gong ei ny index.html blir lasta opp til GitHub.
-const APP_VERSION='2026-10-02.3';
+const APP_VERSION='2026-10-09.1';
 let pendingVersion=null;
 function reloadTo(v){
   const u=new URL(location.href);u.searchParams.set('v',v);
