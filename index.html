@@ -280,6 +280,10 @@ h1 em{font-style:normal;color:transparent;-webkit-text-stroke:2px var(--ink)}
 .gif-frame::before{content:'';position:absolute;top:-4px;right:-4px;width:40px;height:40px;background:var(--yellow);border-radius:0 20px 0 0;z-index:10}
 .gif-frame::after{content:'';position:absolute;bottom:-4px;left:-4px;width:40px;height:40px;background:var(--purple);border-radius:0 0 0 20px;z-index:10}
 #modal-close-hint{font-size:.85rem;color:#999;text-align:center}
+.skip-btn{background:none;border:none;font:500 .9rem 'DM Sans',sans-serif;color:#777;text-decoration:underline;cursor:pointer;padding:.3rem .6rem}
+.again-btn:disabled{opacity:.5;cursor:default}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.save-box.shake{animation:shake .4s ease}
 .song-card{display:flex;flex-direction:column;align-items:center;gap:.4rem;width:min(90vw,440px);cursor:default}
 .song-label{font-size:.8rem;color:#999}
 .spotify-embed{width:100%;border-radius:12px;overflow:hidden;border:2px solid var(--ink);box-shadow:2px 2px 0 var(--ink);background:#282828}
@@ -391,8 +395,9 @@ h1 em{font-style:normal;color:transparent;-webkit-text-stroke:2px var(--ink)}
         <iframe id="spotifyEmbed" title="Spotify" height="80" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
       </div>
     </div>
-    <button class="again-btn" id="againBtn" type="button">Spel igjen</button>
-    <div id="modal-close-hint">Eller klikk utanfor, eller trykk Esc.</div>
+    <button class="again-btn" id="againBtn" type="button">🎰 Spel igjen</button>
+    <button class="skip-btn" id="skipBtn" type="button" hidden>Lukk utan å lagre</button>
+    <div id="modal-close-hint"></div>
   </div>
 </div>
 
@@ -850,7 +855,7 @@ btn.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('dblclick',e=>{if(state==='tapping')e.preventDefault()},{passive:false});
 document.addEventListener('keydown',e=>{
   const open=$('modal').classList.contains('open');
-  if(e.key==='Escape'&&open){closeModal();return}
+  if(e.key==='Escape'&&open){tryClose();return}
   if(open)return;
   const isTapKey=e.code==='Space'||e.key===' '||e.key==='Enter';
   if(!isTapKey)return;
@@ -983,7 +988,8 @@ function openCombo(){
       const cn=document.createElement('span');cn.className='cnt';cn.textContent=it.count+(it.count===1?' spel':' spel');
       li.appendChild(nm);li.appendChild(cn);
     }
-    li.addEventListener('pointerdown',e=>{e.preventDefault();chooseCombo(i)});
+    li.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();suppressCloseUntil=performance.now()+600;chooseCombo(i)});
+    li.addEventListener('click',e=>e.stopPropagation());
     ul.appendChild(li);
   });
   ul.hidden=false;inp.setAttribute('aria-expanded','true');markCombo();
@@ -1116,6 +1122,7 @@ function showResult(idx,spinSec,isRecord){
   $('nameInput').disabled=false;$('teamInput').disabled=false;$('saveBtn').disabled=false;$('saveBtn').textContent='Lagre';
   try{$('teamInput').value=localStorage.getItem('fgh-team')||''}catch(e){}
   confirmedNewTeam=null;closeCombo();
+  syncModalButtons();
   updateTeamList();
   $('saveMsg').textContent='';$('saveMsg').className='save-msg';
   try{$('nameInput').value=localStorage.getItem('fgh-name')||''}catch(e){}
@@ -1150,37 +1157,80 @@ function closeModal(){
   $('game').classList.remove('playing');
   if(state==='done'){state='idle';resetHud();if(!isTouch)btn.focus({preventScroll:true})}
 }
-$('modal').addEventListener('click',e=>{if(!e.target.closest('.result,.gif-frame,.song-card,.again-btn,.save-box'))closeModal()});
+/* ---------- Lukking: aldri miste eit ulagra resultat ---------- */
+let suppressCloseUntil=0;
+const unsaved=()=>!!(lastResult&&!lastResult.saved&&lastResult.taps>0);
+function syncModalButtons(){
+  $('againBtn').textContent=unsaved()?'💾 Lagre og spel igjen':'🎰 Spel igjen';
+  $('skipBtn').hidden=!unsaved();
+  $('modal-close-hint').textContent=unsaved()?'Resultatet blir ikkje lagra før du trykkjer Lagre.':'Klikk utanfor eller trykk Esc for å lukke.';
+}
+function nudgeSave(text){
+  const msg=$('saveMsg');
+  msg.textContent=text||'Resultatet er ikkje lagra enno. Trykk Lagre, eller «Lukk utan å lagre».';
+  msg.className='save-msg err';
+  const box=$('saveBox');box.classList.remove('shake');void box.offsetWidth;box.classList.add('shake');
+  box.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+function tryClose(){
+  if(performance.now()<suppressCloseUntil)return;
+  if(unsaved()){nudgeSave();return}
+  closeModal();
+}
+$('modal').addEventListener('click',e=>{
+  // composedPath held på heile stien sjølv om knappen blei fjerna frå sida under klikket (t.d. team-knappane)
+  const keep='.result,.gif-frame,.song-card,.again-btn,.skip-btn,.save-box,.team-sugg';
+  if(e.composedPath().some(el=>el&&el.matches&&el.matches(keep)))return;
+  if(!document.contains(e.target))return;
+  tryClose();
+});
 $('nameInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('teamInput').focus()}});
-$('saveBox').addEventListener('submit',async e=>{
-  e.preventDefault();
-  if(!lastResult||lastResult.saved)return;
+
+async function doSave(){
+  if(!lastResult||lastResult.saved)return true;
   const name=$('nameInput').value.trim();
   const msg=$('saveMsg');
-  if(!name){msg.textContent='Skriv inn eit namn først.';msg.className='save-msg err';$('nameInput').focus();return}
+  if(!name){msg.textContent='Skriv inn eit namn først.';msg.className='save-msg err';$('nameInput').focus();return false}
   let team=cleanTeam($('teamInput').value);
-  if(!team){msg.textContent='Vel eit team, eller skriv namnet på eit nytt.';msg.className='save-msg err';$('teamInput').focus();return}
+  if(!team){msg.textContent='Vel eit team, eller skriv namnet på eit nytt.';msg.className='save-msg err';$('teamInput').focus();return false}
   const ex=exactTeam(team);
   if(ex)team=ex.name; // bruk eksisterande skrivemåte
   else{
     const sim=similarTeam(team);
     if(sim&&confirmedNewTeam!==normTeam(team)){
-      msg.textContent='Sjekk teamnamnet før du lagrar.';msg.className='save-msg err';updateTeamHint();return;
+      msg.textContent='Sjekk teamnamnet før du lagrar.';msg.className='save-msg err';updateTeamHint();return false;
     }
   }
   $('teamInput').value=team;closeCombo();
   try{localStorage.setItem('fgh-name',name);localStorage.setItem('fgh-team',team)}catch(e){}
   $('saveBtn').disabled=true;$('nameInput').disabled=true;$('teamInput').disabled=true;$('saveBtn').textContent='Lagrar …';
+  $('againBtn').disabled=true;
   msg.textContent='';msg.className='save-msg';
   await saveScore(name,team,lastResult.rounds,lastResult.taps).catch(()=>false);
   lastResult.saved=true;
+  $('againBtn').disabled=false;
   $('saveBox').classList.add('saved');$('saveBtn').textContent='Lagra';renderTeamChips();updateTeamHint();
   const pos=(boardCache.today||[]).findIndex(s=>s.id===newEntryId);
   msg.className='save-msg ok';
   msg.textContent=pos>=0?'Lagra! Du er nummer '+(pos+1)+' på dagens toppliste.':'Lagra! Du kom ikkje på topp 10 i dag, men resultatet er registrert.';
   if(!sbOk)msg.textContent+=' (Berre i denne nettlesaren, fekk ikkje kontakt med den felles lista.)';
+  syncModalButtons();
+  return true;
+}
+$('saveBox').addEventListener('submit',e=>{e.preventDefault();doSave()});
+$('againBtn').addEventListener('click',async()=>{
+  if(unsaved()){
+    if(!$('nameInput').value.trim()&&!$('teamInput').value.trim()){nudgeSave('Skriv namn og team for å lagre, eller trykk «Lukk utan å lagre».');return}
+    const ok=await doSave();if(!ok)return;
+    await new Promise(r=>setTimeout(r,900)); // la folk sjå plasseringa
+  }
+  closeModal();setTimeout(startGame,150);
 });
-$('againBtn').addEventListener('click',()=>{closeModal();setTimeout(startGame,150)});
+$('skipBtn').addEventListener('click',()=>{
+  if(unsaved()&&($('nameInput').value.trim()||$('teamInput').value.trim())&&!confirm('Resultatet blir ikkje lagra. Vil du lukke likevel?'))return;
+  if(lastResult)lastResult.saved=true; // forkasta med vilje
+  closeModal();
+});
 
 function boom(count){
   const w=$('confetti');w.innerHTML='';
@@ -1314,7 +1364,7 @@ if(document.fonts&&document.fonts.load)document.fonts.load('800 92px Syne').then
 document.addEventListener('visibilitychange',()=>{last=performance.now()});
 /* ================= Alltid nyaste versjon ================= */
 // Auk dette talet kvar gong ei ny index.html blir lasta opp til GitHub.
-const APP_VERSION='2026-10-09.1';
+const APP_VERSION='2026-10-09.2';
 let pendingVersion=null;
 function reloadTo(v){
   const u=new URL(location.href);u.searchParams.set('v',v);
