@@ -202,7 +202,7 @@ footer{margin-top:3rem;font-size:.8rem;color:#888;text-align:center}
       <div class="card"><h3>Trykkfart</h3><p class="sub">Trykk per sekund i spela</p><div class="chart"><canvas id="cTapHist"></canvas></div></div>
       <div class="card"><h3>Når blir det spelt?</h3><p class="sub">Spel per klokkeslett</p><div class="chart"><canvas id="cHour"></canvas></div></div>
       <div class="card"><h3>Snittresultat per klokkeslett</h3><p class="sub">Er folk betre før eller etter lunsj?</p><div class="chart"><canvas id="cHourAvg"></canvas></div></div>
-      <div class="card"><h3>Varmekart</h3><p class="sub">Spel per vekedag og time</p><div id="heat" class="heat"></div></div>
+      <div class="card"><h3>Varmekart</h3><p class="sub">Spel per veke og klokkeslett, nyaste veke øvst</p><div id="heat" class="heat" style="max-height:340px;overflow-y:auto"></div></div>
       <div class="card"><h3>Spel nummer kor mange?</h3><p class="sub">Snittresultat for 1., 2., 3. … spel per spelar. Blir ein betre med trening?</p><div class="chart"><canvas id="cLearning"></canvas></div></div>
     </div>
   </section>
@@ -246,7 +246,7 @@ footer{margin-top:3rem;font-size:.8rem;color:#888;text-align:center}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 /* ================= Oppsett ================= */
-const STATS_VERSION='2026-10-09.1';
+const STATS_VERSION='2026-10-23.1';
 const SUPABASE_URL='https://mqecnqmcobyybcxgdixd.supabase.co';
 const SUPABASE_KEY='sb_publishable_p1pgM4gcDoN25cxEoSDoPA_NkdSJd_q';
 const GAME_TIME=10;
@@ -267,6 +267,8 @@ const dayKey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+S
 const dayLabel=k=>{const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('nb-NO',{day:'numeric',month:'short'})};
 const dateTime=d=>d.toLocaleDateString('nb-NO',{day:'numeric',month:'short'})+' kl. '+d.toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'});
 const WD=['Mån','Tys','Ons','Tor','Fre','Lau','Sun'];
+function isoWeek(d){const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=x.getUTCDay()||7;x.setUTCDate(x.getUTCDate()+4-day);
+  const y0=new Date(Date.UTC(x.getUTCFullYear(),0,1));return {y:x.getUTCFullYear(),w:Math.ceil(((x-y0)/86400000+1)/7)}}
 
 /* ================= Henting ================= */
 function sbHeaders(){const h={'apikey':SUPABASE_KEY};if(SUPABASE_KEY.startsWith('eyJ'))h.Authorization='Bearer '+SUPABASE_KEY;return h}
@@ -610,13 +612,21 @@ function renderDist(rows,persons){
     options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
   mk('cHourAvg',{type:'line',data:{labels:H.map(h=>String(h).padStart(2,'0')+':00'),datasets:[{label:'Snitt',spanGaps:true,data:H.map(h=>{const g=rows.filter(r=>r.d.getHours()===h);return g.length?+mean(g.map(r=>r.rounds)).toFixed(1):null}),
     borderColor:'#1ab87c',backgroundColor:'rgba(26,184,124,.15)',fill:true,tension:.35,borderWidth:3,pointRadius:4}]},options:{plugins:{legend:{display:false}},scales:{y:roundsAxis}}});
-  // varmekart
-  const grid=Array.from({length:7},()=>H.map(()=>0));
-  rows.forEach(r=>{const wd=(r.d.getDay()+6)%7;grid[wd][H.indexOf(r.d.getHours())]++});
+  // varmekart: vekenummer × klokkeslett (det blir berre spelt på fredagar)
+  const wkKey=r=>{const w=isoWeek(r.d);return w.y*100+w.w};
+  const weeks=[...new Set(rows.map(wkKey))].sort((a,b)=>b-a); // nyaste øvst
+  const multiYear=new Set(weeks.map(k=>Math.floor(k/100))).size>1;
+  const wkLabel=k=>'Veke '+(k%100)+(multiYear?' ('+Math.floor(k/100)+')':'');
+  const grid=weeks.map(()=>H.map(()=>0));
+  rows.forEach(r=>{grid[weeks.indexOf(wkKey(r))][H.indexOf(r.d.getHours())]++});
   const mx=Math.max(1,...grid.flat());
-  const heat=$('heat');heat.style.gridTemplateColumns='2.6rem repeat('+H.length+',minmax(26px,1fr))';
-  let html='<div class="lbl"></div>'+H.map(h=>'<div class="lbl" style="justify-content:center">'+String(h).padStart(2,'0')+'</div>').join('');
-  grid.forEach((row,i)=>{html+='<div class="lbl">'+WD[i]+'</div>'+row.map(v=>{const a=v/mx;return '<div title="'+WD[i]+': '+v+' spel" style="background:'+(v?'rgba(255,61,90,'+(0.15+0.85*a).toFixed(2)+')':'#f1ece2')+';color:'+(a>0.55?'#fff':'#1a1a1a')+'">'+(v||'')+'</div>'}).join('')});
+  const heat=$('heat');heat.style.gridTemplateColumns=(multiYear?'7.2rem':'4.4rem')+' repeat('+H.length+',minmax(26px,1fr)) 2.6rem';
+  let html='<div class="lbl"></div>'+H.map(h=>'<div class="lbl" style="justify-content:center">'+String(h).padStart(2,'0')+'</div>').join('')+'<div class="lbl" style="justify-content:center">Sum</div>';
+  grid.forEach((row,i)=>{
+    const lab=wkLabel(weeks[i]),tot=sum(row);
+    html+='<div class="lbl">'+lab+'</div>'+row.map((v,j)=>{const a=v/mx;return '<div title="'+lab+', kl. '+String(H[j]).padStart(2,'0')+': '+v+' spel" style="background:'+(v?'rgba(255,61,90,'+(0.15+0.85*a).toFixed(2)+')':'#f1ece2')+';color:'+(a>0.55?'#fff':'#1a1a1a')+'">'+(v||'')+'</div>'}).join('')+
+      '<div style="font-weight:700">'+tot+'</div>';
+  });
   heat.innerHTML=html;
   // læringskurve
   const byIdx=[];
