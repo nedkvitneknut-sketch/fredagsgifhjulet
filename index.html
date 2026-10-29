@@ -301,6 +301,20 @@ h1 em{font-style:normal;color:transparent;-webkit-text-stroke:2px var(--ink)}
 
 .update-toast{position:fixed;left:50%;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:400;background:var(--ink);color:#fff;border-radius:99px;padding:.6rem 1.2rem;font-weight:500;box-shadow:3px 3px 0 var(--red)}
 @media (prefers-reduced-motion:reduce){body::before{animation:none}}
+.fig-cta{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:100px;padding:.85rem 1.3rem;cursor:pointer;box-shadow:0 5px 0 var(--ink);transform:translateY(-5px);touch-action:manipulation}
+.fig-cta:hover{background:var(--yellow)}
+.fig-cta.todo{background:var(--yellow);animation:ctaPulse 1.6s ease-in-out infinite}
+@keyframes ctaPulse{0%,100%{box-shadow:0 5px 0 var(--ink),0 0 0 0 rgba(255,61,90,.45)}50%{box-shadow:0 5px 0 var(--ink),0 0 0 10px rgba(255,61,90,0)}}
+.fig-cta:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.playing .fig-cta{display:none}
+@media (max-width:600px){.fig-cta{flex:1 1 100%;padding:.6rem 1rem;font-size:.95rem;transform:none;box-shadow:0 3px 0 var(--ink)}}
+.fig-bubble{position:absolute;left:0;top:0;z-index:4;transform:translate(-50%,calc(-100% - 14px));max-width:min(230px,60%);
+  background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:18px;padding:.6rem .85rem;font:500 .92rem/1.3 'DM Sans',sans-serif;text-align:left;cursor:pointer;
+  box-shadow:4px 4px 0 var(--ink);animation:bubIn .4s cubic-bezier(.34,1.56,.64,1) both}
+.fig-bubble span{display:block;margin-top:.3rem;font-weight:700;color:var(--red);font-size:.82rem}
+.fig-bubble::after{content:'';position:absolute;left:50%;bottom:-13px;width:20px;height:20px;background:#fff;border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);transform:translateX(-50%) rotate(45deg)}
+.fig-bubble:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+@keyframes bubIn{from{opacity:0;transform:translate(-50%,calc(-100% + 6px)) scale(.8)}to{opacity:1;transform:translate(-50%,calc(-100% - 14px)) scale(1)}}
 .head-links{display:flex;gap:.5rem;flex-wrap:wrap}
 .head-links .stats-link{cursor:pointer}
 .sound.figbtn{right:auto;left:12px}
@@ -331,7 +345,7 @@ h1 em{font-style:normal;color:transparent;-webkit-text-stroke:2px var(--ink)}
 <div id="confetti"></div>
 <aside id="builder" class="builder" hidden aria-label="Figurbyggjar">
   <div class="b-head"><h2>Figuren din</h2><button class="b-done" id="bClose" type="button">Ferdig ✓</button></div>
-  <p class="b-note">Endringane syner med ein gong. Figuren blir hugsa i denne nettlesaren.</p>
+  <p class="b-note" id="bNote">Endringane syner med ein gong. Figuren blir hugsa i denne nettlesaren.</p>
   <div id="bBody"></div>
   <div class="b-foot"><button class="chip" id="bRandom" type="button">🎲 Tilfeldig</button><button class="chip" id="bReset" type="button">↺ Tilbakestill</button></div>
 </aside>
@@ -355,6 +369,7 @@ h1 em{font-style:normal;color:transparent;-webkit-text-stroke:2px var(--ink)}
       <div id="countdown"></div>
       <button class="sound" id="soundBtn" type="button" aria-label="Slå av lyd">🔊</button>
       <button class="sound figbtn" id="figBtnStage" type="button" aria-label="Endre figuren">🧑‍🎨</button>
+      <button class="fig-bubble" id="figBubble" type="button" hidden>Hei! 👋 Lag meg om til <b>deg</b> før du spinn.<span>Trykk her</span></button>
       <div class="lock"><div><b>🔒</b><span id="lockText">Kom tilbake på fredag.</span></div></div>
     </div>
 
@@ -368,6 +383,7 @@ h1 em{font-style:normal;color:transparent;-webkit-text-stroke:2px var(--ink)}
     </div>
 
     <div class="controls">
+      <button class="fig-cta" id="figCta" type="button">🧑‍🎨 <span id="figCtaTxt">Vel figuren din</span></button>
       <div class="btn-outer" id="btnOuter">
         <button id="actionBtn" type="button">🎰 Start</button>
       </div>
@@ -1581,6 +1597,7 @@ try{$('nameInput').value=localStorage.getItem('fgh-name')||''}catch(e){}
 
 function startGame(){
   if(builderOpen)return;
+  if((state==='idle'||state==='done')&&isOpen&&!figDone()){openBuilder('start');return}
   if((state!=='idle'&&state!=='done')||!isOpen)return;
   ensureAudio();preloadGifs();
   $('game').classList.add('playing');
@@ -2072,7 +2089,18 @@ function renderBuilder(){
   });
 }
 function scheduleRebuild(){clearTimeout(_rebuildT);_rebuildT=setTimeout(()=>{if(renderer)buildPerson(FIG_CFG)},30)}
-function openBuilder(){
+const figDone=()=>{try{return !!(localStorage.getItem('fgh-figur-done')||localStorage.getItem('fgh-figur'))}catch(e){return true}};
+let builderMode='';
+function syncFigCta(){
+  const done=figDone();
+  $('figCtaTxt').textContent=done?'Endre figuren':'Vel figuren din';
+  $('figCta').classList.toggle('todo',!done);
+  if(!done&&isOpen)$('hint').textContent='Tips: lag figuren din først, så er det du som snurrar hjulet.';
+}
+function openBuilder(mode){
+  builderMode=mode==='start'?'start':'';
+  $('bClose').textContent=builderMode==='start'?'Ferdig, start! 🎰':'Ferdig ✓';
+  $('bNote').textContent=builderMode==='start'?'Vel figuren din først. Trykk «Ferdig, start!» når du er nøgd, så byrjar spelet.':'Endringane syner med ein gong. Figuren blir hugsa i denne nettlesaren.';
   if(state!=='idle'&&state!=='done')return;
   builderOpen=true;renderBuilder();$('builder').hidden=false;document.body.classList.add('building');
   requestAnimationFrame(()=>$('builder').classList.add('open'));
@@ -2082,10 +2110,19 @@ function closeBuilder(){
   builderOpen=false;$('builder').classList.remove('open');document.body.classList.remove('building');
   setTimeout(()=>{if(!builderOpen)$('builder').hidden=true},250);
 }
-$('figBtn').addEventListener('click',openBuilder);
+$('figBtn').addEventListener('click',()=>openBuilder());
 $('figBtnStage').addEventListener('click',e=>{e.stopPropagation();openBuilder()});
 $('figBtnStage').addEventListener('pointerdown',e=>e.stopPropagation());
-$('bClose').addEventListener('click',closeBuilder);
+$('bClose').addEventListener('click',()=>{
+  try{localStorage.setItem('fgh-figur-done','1')}catch(e){}
+  if(!localStorage.getItem('fgh-figur'))saveFigCfg();
+  const go=builderMode==='start';closeBuilder();syncFigCta();
+  if(go)setTimeout(startGame,350);
+});
+$('figCta').addEventListener('click',()=>openBuilder());
+$('figBubble').addEventListener('click',e=>{e.stopPropagation();openBuilder()});
+$('figBubble').addEventListener('pointerdown',e=>e.stopPropagation());
+syncFigCta();
 $('bRandom').addEventListener('click',()=>{
   for(const k of Object.keys(FIG_OPTIONS)){const o=FIG_OPTIONS[k];const v=o.values[Math.floor(Math.random()*o.values.length)];FIG_CFG[k]=o.type==='color'?v:v[0]}
   saveFigCfg();scheduleRebuild();renderBuilder();
@@ -2265,6 +2302,12 @@ function update(dt,now){
   }
   camera.lookAt(tmpL);
   updateExtras(dt,t);
+  const bub=$('figBubble'),showBub=state==='idle'&&!builderOpen&&isOpen&&!figDone()&&FIG.head&&!$('modal').classList.contains('open');
+  if(showBub){
+    FIG.head.getWorldPosition(tmpV);tmpV.y+=0.6;tmpV.project(camera);
+    bub.style.left=((tmpV.x+1)/2*stage.clientWidth)+'px';bub.style.top=((1-tmpV.y)/2*stage.clientHeight)+'px';
+    if(bub.hidden)bub.hidden=false;
+  }else if(!bub.hidden)bub.hidden=true;
 }
 
 function loop(now){
@@ -2286,7 +2329,7 @@ if(document.fonts&&document.fonts.load)document.fonts.load('800 92px Syne').then
 document.addEventListener('visibilitychange',()=>{last=performance.now()});
 /* ================= Alltid nyaste versjon ================= */
 // Auk dette talet kvar gong ei ny index.html blir lasta opp til GitHub.
-const APP_VERSION='2026-10-29.1';
+const APP_VERSION='2026-10-29.2';
 let pendingVersion=null;
 function reloadTo(v){
   const u=new URL(location.href);u.searchParams.set('v',v);
